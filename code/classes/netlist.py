@@ -62,4 +62,4 @@ class Netlist():
         """
         POST: Return the cost of the netlist"""
 
-        return self.get_wire_count() + 300 * len(self.get_intersections)
+        return self.get_wire_count() + 300 * len(self.get_intersections())
