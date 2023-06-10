@@ -7,7 +7,7 @@ class Net():
         PRE: the chip_id's of the two chips to be connected
         POST: Initializes a net object"""
                 
-        self.gates = [chip_a, chip_b]
+        self.gates = (chip_a, chip_b)
         self.wiring = []
 
 
