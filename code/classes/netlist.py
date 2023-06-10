@@ -1,5 +1,3 @@
-import pandas as pd
-
 class Net():
     
     def __init__(self, chip_a: int, chip_b: int):
@@ -36,7 +34,7 @@ class Netlist():
         POST: Returns the current total amount of wires
         in net.wiring for all the nets in the netlist"""
 
-        return sum(len(net.wiring for net in self.nets))
+        return sum(len(net.wiring) for net in self.nets)
     
 
     def get_intersections(self) -> list[Net, set[int]]:
@@ -47,12 +45,15 @@ class Netlist():
         intersections = []
 
         # Compare each net in the netlist
-        for net1 in self.nets:
-            for net2 in self.nets[1:]:
+        for i in range(len(self.nets)):
+            net1 = self.nets[i]
+            
+            for j in range(i+1, len(self.nets)):
+                net2 = self.nets[j]
 
                 # check if the two nets share a wire position
                 if bool(set(net1.wiring) & set(net2.wiring)):
-                    intersections.append(net1, net2, net1.wiring)
+                    intersections.append((net1, net2, net1.wiring))
 
         return intersections
 
