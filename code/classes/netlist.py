@@ -28,7 +28,7 @@ class Netlist():
 
         # load the data from the csv
         df = pd.read_csv(netlist_path)
-        self.nets = [(net['chip_a'], net['chip_b']) for idx, net in df.iterrows()]
+        self.nets = [Net(net['chip_a'], net['chip_b']) for idx, net in df.iterrows()]
         
         
     def get_wire_count(self) -> int:
