@@ -10,6 +10,7 @@ class Net():
         self.gates = [chip_a, chip_b]
         self.wiring = []
 
+
     def add_wire(self, x: int, y: int):
         """
         PRE: the x and y coördinates for a wire
@@ -36,3 +37,28 @@ class Netlist():
         in net.wiring for all the nets in the netlist"""
 
         return sum(len(net.wiring for net in self.nets))
+    
+
+    def get_intersections(self) -> list[Net, set[int]]:
+        """
+        POST: Return a list of intersecting nets and
+        the coördinates of the intersection"""
+
+        intersections = []
+
+        # Compare each net in the netlist
+        for net1 in self.nets:
+            for net2 in self.nets[1:]:
+
+                # check if the two nets share a wire position
+                if bool(set(net1.wiring) & set(net2.wiring)):
+                    intersections.append(net1, net2, net1.wiring)
+
+        return intersections
+
+    
+    def get_cost(self) -> int:
+        """
+        POST: Return the cost of the netlist"""
+
+        return self.get_wire_count() + 300 * len(self.get_intersections)
