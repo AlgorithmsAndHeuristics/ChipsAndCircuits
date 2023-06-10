@@ -1,17 +1,20 @@
+import pandas as pd
+
+
 class Net():
     
     def __init__(self, chip_a: int, chip_b: int):
         """
-        PRE: the chip_id's of the two chips to be connected
+        PRE: The chip_id's of the two chips to be connected
         POST: Initializes a net object"""
                 
         self.gates = (chip_a, chip_b)
-        self.wiring = []
+        self.wiring: list[tuple[int, int]] = []
 
 
     def add_wire(self, x: int, y: int):
         """
-        PRE: the x and y coördinates for a wire
+        PRE: The x and y coördinates for a wire
         POST: Wire has been added do self.wiring"""
 
         self.wiring.append((x, y))
@@ -21,23 +24,26 @@ class Netlist():
     
     def __init__(self, netlist_path: str):
         """
-        PRE: a path to a netlist_x.csv
+        PRE: A path to a netlist_x.csv
         POST: Initializes a Netlist object"""
 
         # load the data from the csv
         df = pd.read_csv(netlist_path)
         self.nets = [Net(net['chip_a'], net['chip_b']) for idx, net in df.iterrows()]
-        
-        
-    def get_wire_count(self) -> int:
-        """
-        POST: Returns the current total amount of wires
-        in net.wiring for all the nets in the netlist"""
-
-        return sum(len(net.wiring) for net in self.nets)
     
+    
+    def check_intersection(self) -> None:
+        pass
+    
+    
+    def get_cost(self) -> int:
+        """
+        POST: Return the cost of the netlist, according to the formula: C = n + 300 * k"""
 
-    def get_intersections(self) -> list[Net, set[int]]:
+        return self.get_wire_count() + 300 * len(self.get_intersections())
+    
+    
+    def get_intersections(self) -> list[tuple[Net, Net, list[tuple[int, int]]]]:
         """
         POST: Return a list of intersecting nets and
         the coördinates of the intersection"""
@@ -51,15 +57,27 @@ class Netlist():
             for j in range(i+1, len(self.nets)):
                 net2 = self.nets[j]
 
-                # check if the two nets share a wire position
+                # Check if the two nets share a wire position
                 if bool(set(net1.wiring) & set(net2.wiring)):
                     intersections.append((net1, net2, net1.wiring))
 
         return intersections
-
     
-    def get_cost(self) -> int:
+    
+    def get_wire_count(self) -> int:
         """
-        POST: Return the cost of the netlist"""
+        POST: Returns the current total amount of wires
+        in net.wiring for all the nets in the netlist"""
 
-        return self.get_wire_count() + 300 * len(self.get_intersections())
+        return sum(len(net.wiring) for net in self.nets)
+    
+    
+    # TODO: Decide whether to create this method to use in __init__ or not
+    #def load_csv(self) -> None:
+    #    df: pd.DataFrame = pd.read_csv('print_0.csv')
+    #    
+    #    # Since each row represents a Net, add them to self.nets
+    #    for row in df.rows:
+    #        net: Net = Net(row['chip'], row['chip']) # TODO: Differentiate between chip_a and chip_b when initializing
+    #        net.add_wire(row['x'], row['y'])
+    #        self.nets.append(net)
