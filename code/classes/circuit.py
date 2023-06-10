@@ -6,7 +6,7 @@ import pandas as pd
 class Circuit():
   
     def __init__(self):
-        pass
+        self.netlists: list[Netlist] = []
     
     
     def get_representation(self) -> str:
