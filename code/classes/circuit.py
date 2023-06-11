@@ -52,7 +52,7 @@ class Circuit():
         for netlist in self.netlists:
             for net in netlist.nets:
                 for wire in net.wiring:
-                    board[wire.y - 1][wire.x - 1] = "-"
+                    board[wire.y - 1][wire.x - 1] = "."
 
         # Place the intersections on the board
         for netlist in self.netlists:
