@@ -6,7 +6,7 @@ import pandas as pd
 # TODO: self.layers
 class Circuit():
     
-    def __init__(self, print_path: str, factor: int) -> None:
+    def __init__(self, print_path: str, factor: int = 1) -> None:
         self.netlists: list[Netlist] = []
         self.gates: list[Gate] = []
         
