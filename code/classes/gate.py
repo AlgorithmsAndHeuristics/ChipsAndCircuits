@@ -1,5 +1,6 @@
 import math
 
+
 class Gate():
 
     def __init__(self, id: int, position: tuple[int, int]) -> None:
@@ -16,7 +17,6 @@ class Gate():
         Gets the distance between two gates.
         PRE: Other_gate of type Gate
         POST: Distance between the gates rounded up as int"""
-
 
         dx = abs(self.position[0] - other_gate.position[0])
         dy = abs(self.position[1] - other_gate.position[1])

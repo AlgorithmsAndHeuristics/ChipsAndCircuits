@@ -1,10 +1,11 @@
-from gate import Gate
-from netlist import Netlist
+from .gate import Gate
+from .netlist import Netlist
 import pandas as pd
 
 
+# TODO: self.layers
 class Circuit():
-  
+    
     def __init__(self, print_path):
         self.netlists: list[Netlist] = []
         self.gates: list[Gate] = []
@@ -38,6 +39,12 @@ class Circuit():
         return(board_str)
     
     
-    
     def load_netlist(self, path: str) -> None:
         self.netlists.append(Netlist(path))
+
+
+    # def get_netlist(self, id: int) -> str:
+        
+    #     return self.netlists[]
+
+
