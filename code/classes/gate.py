@@ -1,6 +1,5 @@
 import math
 
-
 class Gate():
 
     def __init__(self, id: int, position: tuple[int, int]) -> None:
