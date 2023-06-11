@@ -18,11 +18,11 @@ class Circuit():
         # Create the grid based on the furthest gates
         grid_width = max([gate.position[0] for gate in self.gates])
         grid_height = max([gate.position[1] for gate in self.gates])
-        self.grid = [['_' for i in range(grid_width + 6)] for y in range(grid_height + 6)]
+        self.grid = [['_' for i in range(grid_width)] for y in range(grid_height)]
         
         # Place the gates on the grid
         for gate in self.gates:
-          self.grid[gate.position[0]][gate.position[1]] = gate.id
+          self.grid[gate.position[0] - 1][gate.position[1]] = gate.id
     
     
     def get_representation(self) -> str:  
