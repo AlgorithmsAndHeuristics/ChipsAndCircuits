@@ -1,5 +1,5 @@
-from .intersection import Intersection
-from .net import Net
+from intersection import Intersection
+from net import Net
 import pandas as pd
 
 

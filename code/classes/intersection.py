@@ -1,5 +1,5 @@
-from .net import Net
-from .wire import Wire
+from net import Net
+from wire import Wire
 
 
 class Intersection():

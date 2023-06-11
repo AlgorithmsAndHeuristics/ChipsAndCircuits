@@ -1,5 +1,5 @@
-from .gate import Gate
-from .netlist import Netlist
+from gate import Gate
+from netlist import Netlist
 import pandas as pd
 
 
