@@ -11,9 +11,9 @@ from netlist import Netlist
 from net import Net
 
 if __name__ == "__main__":
-    chip, netlist = 0, 1
+    chip, netlist, enlarge_factor = 0, 1, 3
 
-    circ = Circuit(f"data/chip_{chip}/print_{chip}.csv", 3)
+    circ = Circuit(f"data/chip_{chip}/print_{chip}.csv", enlarge_factor)
 
     print(f"Initial circuit:\n{circ}")
 
