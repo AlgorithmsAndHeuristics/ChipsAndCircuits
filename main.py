@@ -22,4 +22,8 @@ print(f"A connection is required from gates:")
 for net in circ.netlists[0].nets:
     print(f"Gate {net.gates[0]} to gate {net.gates[1]}")
 
+for wire in [(1,1)]:
+    circ.netlists[0].nets[0].add_wire(wire[0], wire[1])
+
+print(f"Initial circuit:\n{circ.get_representation()}")
 
