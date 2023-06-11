@@ -25,6 +25,5 @@ class Net():
     def __repr__(self) -> str:
         """
         POST: string representation of net"""
-        string = f"{self.gates[0]}".rjust(6, " ") + " | " + f"{self.gates[1]}".rjust(6, " ") 
         
-        return 
+        return f"chip_a | chip_b\n{self.gates[0]:>6} | {self.gates[1]:>6}"

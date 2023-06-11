@@ -1,7 +1,6 @@
 from net import Net
 from wire import Wire
 
-
 class Intersection():
     
     def __init__(self, net1: Net, net2: Net, x: int, y: int):

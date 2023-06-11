@@ -19,8 +19,8 @@ class Netlist():
         """
         Check if a connection between two Nets has an intersection"""
         for intersection in self.get_intersections():
-            if (intersection.net1 == intersected_net1 and intersection.net2 == intersected_net2) or \
-                (intersection.net2 == intersected_net1 and intersection.net1 == intersected_net2):
+            if (intersection.net1 == net1 and intersection.net2 == net2) or \
+                (intersection.net2 == net1 and intersection.net1 == net2):
                 return True
         
         return False
@@ -61,14 +61,3 @@ class Netlist():
         in net.wiring for all the nets in the netlist"""
 
         return sum(len(net.wiring) for net in self.nets)
-
-
-    def __repr__(self) -> str:
-        """
-        POST: Returns string represenatation of netlist"""
-        
-        string = "chip_a | chip_b\n"
-        for net in self.nets:
-            string += f"{net.gates[0]}".rjust(6, " ") + " | " + f"{net.gates[1]}".rjust(6, " ") + "\n"
-
-        return string
