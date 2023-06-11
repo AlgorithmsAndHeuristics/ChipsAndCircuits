@@ -10,20 +10,20 @@ from gate import Gate
 from netlist import Netlist
 from net import Net
 
-circ = Circuit("data/chip_0/print_0.csv")
+if __name__ == "__main__":
+    chip, netlist = 0, 1
 
-print(f"Initial circuit:\n{circ.get_representation()}")
+    circ = Circuit(f"data/chip_{chip}/print_{chip}.csv", 3)
 
-circ.load_netlist("data/chip_0/netlist_1.csv")
+    print(f"Initial circuit:\n{circ}")
 
-print(f"Netlist 1 has {len(circ.netlists[0].nets)} nets")
-print(f"A connection is required from gates:")
+    circ.load_netlist(f"data/chip_{chip}/netlist_{netlist}.csv")
 
-for net in circ.netlists[0].nets:
-    print(f"Gate {net.gates[0]} to gate {net.gates[1]}")
+    print(f"Netlist {netlist} has {len(circ.netlists[0].nets)} nets")
+    print(f"A connection is required from gates:")
 
-for wire in [(1,1)]:
-    circ.netlists[0].nets[0].add_wire(wire[0], wire[1])
+    for net in circ.netlists[0].nets:
+        print(f"Gate {net.gates[0]} to gate {net.gates[1]}")
 
-print(f"Initial circuit:\n{circ.get_representation()}")
-
+    for wire in [(1,1)]:
+        circ.netlists[0].nets[0].add_wire(wire[0], wire[1])

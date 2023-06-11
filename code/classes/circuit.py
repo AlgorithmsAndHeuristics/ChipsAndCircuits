@@ -1,12 +1,12 @@
-from .gate import Gate
-from .netlist import Netlist
+from gate import Gate
+from netlist import Netlist
 import pandas as pd
 
 
 # TODO: self.layers
 class Circuit():
     
-    def __init__(self, print_path):
+    def __init__(self, print_path: str, factor: int) -> None:
         self.netlists: list[Netlist] = []
         self.gates: list[Gate] = []
         
@@ -14,20 +14,37 @@ class Circuit():
         
         # Read the gates from the print_x file
         for index, gate in print_x.iterrows():
-          self.gates.append(Gate(int(gate[0]), (int(gate[1]), int(gate[2]))))
+            self.gates.append(Gate(int(gate[0]), (int(gate[1]), int(gate[2]))))
         
+        self.make_grid(factor)
+    
+
+    def make_grid(self, factor: int) -> None:
+        """
+        Make the grid with a multiplying factor.
+        PRE: Factor of type int, must be larger or equal to 1
+        POST: Grid is dimensions are multiplied by factor,
+        center stays the same"""
+
+        assert factor >= 1, "Can't make grid smaller than biggest distance"
 
         # Create the grid based on the furthest gates
-        grid_width = max([gate.position[0] for gate in self.gates])
-        grid_height = max([gate.position[1] for gate in self.gates])
+        org_width = max([gate.position[0] for gate in self.gates])
+        org_height = max([gate.position[1] for gate in self.gates])
+        grid_width = int(org_width * factor)
+        grid_height = int(org_height * factor)
         self.grid = [['_' for i in range(grid_width - 1)] for y in range(grid_height + 1)]
         
         # Place the gates on the grid
+        x_move = (grid_width - org_width) // 2
+        y_move = (grid_height - org_height) // 2
+
         for gate in self.gates:
-          self.grid[gate.position[0] - 1][gate.position[1] - 1] = gate.id
+            gate.position = (gate.position[0] + x_move, gate.position[1] + y_move)
+            self.grid[gate.position[0] - 1][gate.position[1] - 1] = gate.id
+
     
-    
-    def get_representation(self) -> str:  
+    def __repr__(self) -> str:  
         board_str = ""
 
         for row in self.grid:
@@ -36,15 +53,9 @@ class Circuit():
 
             board_str += "\n"
 
-        return(board_str)
+        return board_str
     
     
     def load_netlist(self, path: str) -> None:
         self.netlists.append(Netlist(path))
-
-
-    # def get_netlist(self, id: int) -> str:
-        
-    #     return self.netlists[]
-
 
