@@ -22,8 +22,14 @@ print(f"A connection is required from gates:")
 for net in circ.netlists[0].nets:
     print(f"Gate {net.gates[0]} to gate {net.gates[1]}")
 
-for wire in [(1,1)]:
+for wire in [(5,2), (4,2), (3,2), (3,3), (2,3)]:
     circ.netlists[0].nets[0].add_wire(wire[0], wire[1])
 
-print(f"Initial circuit:\n{circ.get_representation()}")
+print(f"\nCircuit after adding a wire from gate 1 to gate 5:\n{circ.get_representation()}")
 
+print(f"Current cost: {circ.netlists[0].get_cost()}")
+
+for wire in [(5,5), (5,4), (5,3), (5,2)]:
+    circ.netlists[0].nets[1].add_wire(wire[0], wire[1])
+
+print(f"\nCircuit after adding a wire from gate 2 to gate 1:\n{circ.get_representation()}")

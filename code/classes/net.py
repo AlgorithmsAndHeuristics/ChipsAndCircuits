@@ -19,6 +19,9 @@ class Net():
 
         self.wiring.append(Wire(x, y))
 
+    def get_wire_positions(self) -> list[set[int]]:
+        return [(wire.x, wire.y) for wire in self.wiring]
+
     def __repr__(self) -> str:
         """
         POST: string representation of net"""

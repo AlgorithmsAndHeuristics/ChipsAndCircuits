@@ -48,8 +48,9 @@ class Netlist():
                 net2 = self.nets[j]
 
                 # Check if the two nets share a wire position
-                if bool(set(net1.wiring) & set(net2.wiring)):
-                    intersections.add(Intersection(net1, net2, net1.wiring))
+                position = [pos for pos in net1.get_wire_positions() if pos in net2.get_wire_positions()]
+                if bool(position):
+                    intersections.add(Intersection(net1, net2, position[0][0], position[0][1]))
 
         return intersections
     

@@ -29,8 +29,21 @@ class Circuit():
     
     def get_representation(self) -> str:  
         board_str = ""
+        board = self.grid
 
-        for row in self.grid:
+        # Place the wires on the board
+        for netlist in self.netlists:
+            for net in netlist.nets:
+                for wire in net.wiring:
+                    board[wire.y - 1][wire.x - 1] = "-"
+
+        # Place the intersections on the board
+        for netlist in self.netlists:
+            for intersection in netlist.get_intersections():
+                board[intersection.y - 1][intersection.x - 1] = "x"
+        
+        # Turn the board into a string
+        for row in board:
             for tile in row:
                 board_str += str(tile)
 
