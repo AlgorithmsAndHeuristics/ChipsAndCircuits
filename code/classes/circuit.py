@@ -28,7 +28,7 @@ class Circuit():
     def get_representation(self) -> str:  
         board_str = ""
 
-        for row in board:
+        for row in self.grid:
             for tile in row:
                 board_str += str(tile)
 
