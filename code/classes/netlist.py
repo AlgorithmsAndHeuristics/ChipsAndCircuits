@@ -11,7 +11,7 @@ class Netlist():
 
         # load the data from the csv
         df = pd.read_csv(netlist_path)
-        self.nets = [Net(net['chip_a'], net['chip_b']) for idx, net in df.iterrows()]
+        self.nets = [Net(net['chip_a'], net['chip_b']) for _, net in df.iterrows()]
     
     
     def check_intersection(self) -> None:
@@ -52,14 +52,3 @@ class Netlist():
         in net.wiring for all the nets in the netlist"""
 
         return sum(len(net.wiring) for net in self.nets)
-    
-    
-    # TODO: Decide whether to create this method to use in __init__ or not
-    #def load_csv(self) -> None:
-    #    df: pd.DataFrame = pd.read_csv('print_0.csv')
-    #    
-    #    # Since each row represents a Net, add them to self.nets
-    #    for row in df.rows:
-    #        net: Net = Net(row['chip'], row['chip']) # TODO: Differentiate between chip_a and chip_b when initializing
-    #        net.add_wire(row['x'], row['y'])
-    #        self.nets.append(net)
