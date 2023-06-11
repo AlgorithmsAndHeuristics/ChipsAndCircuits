@@ -14,15 +14,16 @@ class Circuit():
         # Read the gates from the print_x file
         for index, gate in print_x.iterrows():
           self.gates.append(Gate(int(gate[0]), (int(gate[1]), int(gate[2]))))
-          
+        
+
         # Create the grid based on the furthest gates
         grid_width = max([gate.position[0] for gate in self.gates])
         grid_height = max([gate.position[1] for gate in self.gates])
-        self.grid = [['_' for i in range(grid_width)] for y in range(grid_height)]
+        self.grid = [['_' for i in range(grid_width - 1)] for y in range(grid_height + 1)]
         
         # Place the gates on the grid
         for gate in self.gates:
-          self.grid[gate.position[0] - 1][gate.position[1]] = gate.id
+          self.grid[gate.position[0] - 1][gate.position[1] - 1] = gate.id
     
     
     def get_representation(self) -> str:  
@@ -32,7 +33,7 @@ class Circuit():
             for tile in row:
                 board_str += str(tile)
 
-        board_str += "\n"
+            board_str += "\n"
 
         return(board_str)
     
