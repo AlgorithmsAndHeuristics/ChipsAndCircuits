@@ -15,12 +15,12 @@ class Netlist():
         self.nets = [Net(net['chip_a'], net['chip_b']) for _, net in df.iterrows()]
     
     
-    def check_intersection(self, net1: Net, net2: Net) -> bool:
+    def check_intersection(self, net2: Net) -> bool:
         """
-        Check if a connection between two Nets has an intersection"""
+        Check if connection has an intersection with the given net"""
         for intersection in self.get_intersections():
-            if (intersection.net1 == net1 and intersection.net2 == net2) or \
-                (intersection.net2 == net1 and intersection.net1 == net2):
+            if (intersection.net1 == self and intersection.net2 == net2) or \
+                (intersection.net2 == self and intersection.net1 == net2):
                 return True
         
         return False
