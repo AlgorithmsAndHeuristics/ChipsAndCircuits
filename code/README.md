@@ -32,6 +32,18 @@ Bevat de volgende method(s):
 
 * **get_distance(self, other_gate):** geeft de hemelsbrede afstand tussen self en de gegeven gate.
 
+### Wire
+Een draadcomponent in een **Net**. Bevat de volgende variabelen:
+* **self.x:** een integer die de x coördinaat representeert;
+* **self.y:** een integer die de y coördinaat representeert.
+
+### Intersection
+Een overlap tussen twee **Net**s. Bevat de volgende variabelen:
+* **self.net1:** een Net object dat met net2 overlapt;
+* **self.net2:** een net object dat met net1 overlapt;
+* **self.x:** een integer die de x coördinaat representeert;
+* **self.y:** een integer die de y coördinaat representeert.
+
 ### Circuit
 Een canvas met **Gate**s en **Netlist**s. Bevat de volgende variabelen:
 * **self.netlists:** een lijst met Netlist objects;
@@ -40,7 +52,7 @@ Een canvas met **Gate**s en **Netlist**s. Bevat de volgende variabelen:
 Bevat de volgende methode(s):
 * **self.make_grid(self, factor):** maakt een grid met een oppervlakte afhankelijk van de gegeven factor.
 
-Het printen van een **Circuit** object geeft een array waar lege plekken weergegeven worden met een **underscore**, gates met hun **id**, draden met 
+Het printen van een **Circuit** object geeft een array waar lege plekken weergegeven worden met een **underscore**, gates met hun **id**, draden met een **punt** en intersecties met een **x**. 
 
 # Algorithms
 De algorithms folder bevat de diverse algoritmes om het probleem op te lossen. In deze folder vind je:
