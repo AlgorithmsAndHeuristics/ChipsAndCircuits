@@ -18,7 +18,7 @@ Alle Python scripts staan in de folder Code. In de map Data zitten alle input wa
 
 ### Test (Testing)
 
-Om de code te draaien met de standaardconfiguratie (bv. brute-force en voorbeeld.csv) gebruik de instructie:
+Om de code te draaien met de standaardconfiguratie (momenteel een voorbeeld van de representatie, gebaseerd op netlist_1.csv en print_0.csv van chip_0) gebruik de instructie:
 
 ```
 python main.py
