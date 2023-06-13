@@ -11,7 +11,8 @@ from netlist import Netlist
 from net import Net
 
 if __name__ == "__main__":
-    circ = Circuit("data/chip_0/print_0.csv")
+    #circ = Circuit("data/chip_0/print_0.csv")
+    circ = Circuit("data/chip_1/print_1.csv")
 
     print(f"Initial circuit:\n{circ}")
 
