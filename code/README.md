@@ -63,6 +63,7 @@ Een canvas met **Gate**s en **Netlist**s. Bevat de volgende variabelen:
 
 Bevat de volgende methode(s):
 * **self.make_grid(self, factor):** maakt een grid met een oppervlakte afhankelijk van de gegeven factor.
+* **self.check_position(self, x, y):** geeft een triple met booleans die respectievelijk aangeven of de positie met de gegeven coördinaten buiten de range van de grid is, een Gate bevat of een Wire bevat.
 
 Het printen van een **Circuit** object geeft een array waar lege plekken weergegeven worden met een **underscore**, gates met hun **id**, draden met een **punt** en intersecties met een **x**. 
 
