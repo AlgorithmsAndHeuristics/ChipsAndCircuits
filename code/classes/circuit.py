@@ -1,6 +1,7 @@
 from gate import Gate
 from netlist import Netlist
 import pandas as pd
+import random
 
 
 # TODO: self.layers
@@ -55,6 +56,42 @@ class Circuit():
         return board_str
     
 
+    def execute_baseline_algorithm(self) -> None:
+        netlist: Netlist = self.netlists[0]
+        
+        # Step 1: Start at a random Net in the Netlist
+        net: Net = random.choice(netlist.nets)
+        
+        # Step 2: Start with chip_a, check if all neighboring cells are valid
+        chip_a: int = net.gates[0]
+        chip_a_x: int = 0
+        chip_a_y: int = 0 # TODO: Fix Y-coordinate setting
+        coords_set: bool = False
+        
+        for row in self.grid:
+            for cell in row:
+                # Only look for gates to pinpoint initial coordinates
+                if '_' in cell:
+                    continue
+                
+                # Extract integer value from cell
+                cell_value: int = int(cell.strip())
+                
+                if cell_value == chip_a:
+                    # Finish chip_a's row and column indices
+                    coords_set = True
+                
+                if not coords_set:
+                    chip_a_y += 1
+            
+            if not coords_set:
+                chip_a_x += 1
+                
+                # Reset Y-coordinate because a new row commences
+                chip_a_y = 0
+    
+        print(f'{chip_a}: ({chip_a_x}, {chip_a_y})')
+    
     def get_gate_id(self, gate: Gate) -> str:
         gate_id: str = str(gate.id)
         
@@ -80,6 +117,7 @@ class Circuit():
     
     def load_netlist(self, path: str) -> None:
         self.netlists.append(Netlist(path))
+        self.execute_baseline_algorithm()
     
     
     def make_grid(self, factor: int) -> None:

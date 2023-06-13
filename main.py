@@ -11,8 +11,8 @@ from netlist import Netlist
 from net import Net
 
 
-chip: int = 1
-netlist: int = 4
+chip: int = 0
+netlist: int = 1
 
 
 def print_nets(circuit: Circuit):
