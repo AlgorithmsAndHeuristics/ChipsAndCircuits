@@ -14,7 +14,7 @@ pip install -r requirements.txt
 
 ### Structuur (Structure)
 
-Alle Python scripts staan in de folder Code. In de map Data zitten alle input waardes en in de map resultaten worden alle resultaten opgeslagen door de code.
+Alle Python scripts staan in de folder **code**. In de map **data** zitten alle input waardes en in de map **resultaten** worden alle resultaten opgeslagen door de code. In de map **images** staan de afbeeldingen voor de README bestanden.
 
 ### Test (Testing)
 
