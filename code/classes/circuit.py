@@ -33,27 +33,15 @@ class Circuit():
         org_height = max([gate.position[1] for gate in self.gates])
         grid_width = int(org_width * factor)
         grid_height = int(org_height * factor)
-        self.grid: list[list[str]] = [['_' for x in range(grid_width - 1)] for y in range(grid_height + 1)]
-        
-        print(f'dimensions: {len(self.grid)} x {len(self.grid[0])}')
+        self.grid: list[list[str]] = [['_' for y in range(grid_height + 1)] for x in range(grid_width + 1)]
         
         # Place the gates on the grid
         x_move = (grid_width - org_width) // 2
         y_move = (grid_height - org_height) // 2
 
-        out_of_bounds: str = ''
-        
         for gate in self.gates:
             gate.position = (gate.position[0] + x_move, gate.position[1] + y_move)
-            x_position: int = gate.position[0] - 1
-            
-            if x_position in self.grid:
-                self.grid[x_position][gate.position[1] - 1] = gate.id
-            else:
-                # TODO: Prevent any gates going out of bounds in the first place
-                out_of_bounds += str(x_position) + ', '
-        
-        print('x-coordinates out of bounds: ' + out_of_bounds)
+            self.grid[gate.position[0] - 1][gate.position[1] - 1] = gate.id
 
     
     def __repr__(self) -> str:  
