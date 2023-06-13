@@ -56,16 +56,14 @@ class Circuit():
         return board_str
     
 
-    def execute_baseline_algorithm(self) -> None:
-        netlist: Netlist = self.netlists[0]
-        
+    def execute_baseline_algorithm(self, netlist: Netlist) -> None:
         # Step 1: Start at a random Net in the Netlist
         net: Net = random.choice(netlist.nets)
         
         # Step 2: Start with chip_a, check if all neighboring cells are valid
         chip_a: int = net.gates[0]
-        chip_a_x: int = 0
-        chip_a_y: int = 0 # TODO: Fix Y-coordinate setting
+        x: int = 0 # TODO: Fix X-coordinate setting
+        y: int = 0
         coords_set: bool = False
         
         for row in self.grid:
@@ -82,15 +80,21 @@ class Circuit():
                     coords_set = True
                 
                 if not coords_set:
-                    chip_a_y += 1
+                    x += 1
             
             if not coords_set:
-                chip_a_x += 1
+                y += 1
                 
-                # Reset Y-coordinate because a new row commences
-                chip_a_y = 0
+                # Reset X-coordinate because a new row commences
+                x = 0
+        
+        # Print coordinates and valid neighbors
+        print(f'{chip_a}: ({x}, {y})')
+        print(f'> north: {y - 1 >= 0}')
+        print(f'> south: {y + 1 <= len(self.grid)}')
+        print(f'> west: TODO')
+        print(f'> east: TODO')
     
-        print(f'{chip_a}: ({chip_a_x}, {chip_a_y})')
     
     def get_gate_id(self, gate: Gate) -> str:
         gate_id: str = str(gate.id)
@@ -116,8 +120,9 @@ class Circuit():
     
     
     def load_netlist(self, path: str) -> None:
-        self.netlists.append(Netlist(path))
-        self.execute_baseline_algorithm()
+        netlist: Netlist = Netlist(path)
+        self.netlists.append(netlist)
+        self.execute_baseline_algorithm(netlist)
     
     
     def make_grid(self, factor: int) -> None:
