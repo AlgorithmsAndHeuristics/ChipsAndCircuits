@@ -1,18 +1,19 @@
 from intersection import Intersection
 from net import Net
+from gate import Gate
 import pandas as pd
 
 
 class Netlist():
     
-    def __init__(self, netlist_path: str):
+    def __init__(self, netlist_path: str, gates: dict[int, Gate]):
         """
         PRE: A path to a netlist_x.csv
         POST: Initializes a Netlist object"""
 
         # Load the data from the csv
         df = pd.read_csv(netlist_path)
-        self.nets = [Net(net['chip_a'], net['chip_b']) for _, net in df.iterrows()]
+        self.nets = [Net(gates[net['chip_a']], gates[net['chip_b']]) for _, net in df.iterrows()]
     
     
     def check_intersection(self, net1: Net, net2: Net) -> bool:

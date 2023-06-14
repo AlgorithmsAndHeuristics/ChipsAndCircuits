@@ -4,42 +4,23 @@ sys.path.append(os.path.join(directory, "code"))
 sys.path.append(os.path.join(directory, "code", "classes"))
 sys.path.append(os.path.join(directory, "code", "algorithms"))
 
-# Import used datastructures
 from circuit import Circuit
-from gate import Gate
-from netlist import Netlist
-from net import Net
+from randomise import make_nets
+
 
 if __name__ == "__main__":
-    circ = Circuit("data/chip_0/print_0.csv")
+    chip = 0
+    net_id = (chip * 3) + 1
+    circuit = Circuit(f"data/chip_{chip}/print_{chip}.csv")
 
-    print(f"Initial circuit:\n{circ}")
+    print(f"Initial circuit:\n{circuit}")
 
-    circ.load_netlist("data/chip_0/netlist_1.csv")
+    circuit.load_netlist(f"data/chip_{chip}/netlist_{net_id}.csv")
 
-    print(f"Netlist 1 has {len(circ.netlists[0].nets)} nets")
+    print(f"Netlist 1 has {len(circuit.netlists[0].nets)} nets")
     print(f"A connection is required from gates:")
 
-    for net in circ.netlists[0].nets:
+    for net in circuit.netlists[0].nets:
         print(f"Gate {net.gates[0]} to gate {net.gates[1]}")
 
-    for wire in [(5,2), (4,2), (3,2), (3,3), (2,3)]:
-        circ.netlists[0].nets[0].add_wire(wire[0], wire[1])
-
-    print(f"\nCircuit after adding a wire from gate 1 to gate 5:\n{circ}")
-
-    print(f"Current cost: {circ.netlists[0].get_cost()}")
-
-    for wire in [(5,5), (5,4), (5,3), (5,2)]:
-        circ.netlists[0].nets[1].add_wire(wire[0], wire[1])
-
-    print(f"\nCircuit after adding a wire from gate 2 to gate 1:\n{circ}")
-
-    print(f"Current cost: {circ.netlists[0].get_cost()}")
-
-    print("-----------------------")
-
-    print("Adding an enlargement factor increases the grid size")
-
-    print(Circuit("data/chip_0/print_0.csv", 2))
-    
+    make_nets(circuit, net_id)
