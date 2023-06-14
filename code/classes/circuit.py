@@ -5,6 +5,7 @@ from wire import Wire
 import pandas as pd
 import math
 
+Position = tuple[int, int]
 
 # TODO: self.layers
 class Circuit():
@@ -15,6 +16,7 @@ class Circuit():
         POST: Initializes a Circuit object"""
 
         self.netlists: list[Netlist] = []
+        self.netlists2: dict[int, Netlist] = dict()
         self.gates: dict[int, Gate] = {}
         
         print_x = pd.read_csv(print_path)
@@ -40,7 +42,7 @@ class Circuit():
         org_height = max([self.gates[id].position[1] for id in self.gates])
         grid_width = int(org_width * factor)
         grid_height = int(org_height * factor)
-        self.grid = [['_' for i in range(grid_width + 1)] for y in range(grid_height + 1)]
+        self.grid = [['_' for i in range(grid_width)] for y in range(grid_height)]
         
         # Place the gates on the grid
         x_move = (grid_width - org_width) // 2
@@ -48,8 +50,9 @@ class Circuit():
 
         for id in self.gates:
             gate = self.gates[id]
-            gate.position = (gate.position[0] + x_move, gate.position[1] + y_move)
+            gate.position = (gate.position[0] - 1 + x_move, gate.position[1] - 1 + y_move)
             self.grid[gate.position[1]][gate.position[0]] = gate.id
+
 
     def __repr__(self) -> str:  
         board_str = ""
@@ -57,14 +60,15 @@ class Circuit():
 
         # Place the wires on the board
         for netlist in self.netlists:
-            for net in netlist.nets:
-                for wire in net.wiring:
-                    board[wire.y - 1][wire.x - 1] = "-"
+            for net_id in netlist.nets2:
+                for wire in netlist.nets2[net_id].wiring:
+                    if board[wire.y][wire.x] == '_':
+                        board[wire.y][wire.x] = "-"
 
         # Place the intersections on the board
         for netlist in self.netlists:
             for intersection in netlist.get_intersections():
-                board[intersection.y - 1][intersection.x - 1] = "x"
+                board[intersection.y][intersection.x] = "x"
         
         # Turn the board into a string
         for row in board:
@@ -84,31 +88,52 @@ class Circuit():
         self.netlists.append(Netlist(path, self.gates))
 
     
-    def check_position(self, x: int, y: int) -> set[bool]:
+    def check_position(self, position: Position, netlist_id: int, net_id: int) -> list[bool]:
         """
         PRE: x and y coördinates of a position on the grid
         POST: Returns a triple of booleans respectively 
         representing whether the spot contains a border, Gate or Wire"""
 
-        bool_set = ()
+        bool_set = []
+        
+        # Check if position isn't already used by Wire in Net
+        net = self.get_net(netlist_id, net_id)
+        wires = net.wiring
+        wire_bool = False
 
+        # Check if a Wire of the same Net has already been at that position
+        for wire in wires:
+            if position == (wire.x, wire.y):
+                wire_bool = True
+                break
+        
+        bool_set.append(wire_bool)
+        
         # Check if position contains a border (are out of bounds)
-        if x < 0 or x > len(self.grid[0]) or y < 0 or y > len(self.grid):
-            bool_set.add(True)
+        if position[0] < 0 or position[0] > len(self.grid[0]) - 1 or position[1] < 0 or position[1] > len(self.grid) - 1:
+            bool_set.append(True)
         else:
-            bool_set.add(False)
+            bool_set.append(False)
 
-        # Check if position contains a gate
-        if (x, y) in [(gate.position[0], gate.position[1]) for gate in self.gates]:
-            bool_set.add(True)
-        else:
-            bool_set.add(False)
+        # Check if position contains a Gate
 
-        # Check if position contains a wire
-        if (x,y) in [(wire.x, wire.y) for netlist in self.netlists for net in netlist.nets for wire in net.wiring]:
-            bool_set.add(True)
+        # NOTE: END GATE AS POSITION SHOULD RETURN FALSE:
+        net: Net = self.get_net(netlist_id, net_id)
+        end_gate: Gate = net.gates[-1]
+        end_position = end_gate.position
+
+        if (position != end_position and
+            position in [(self.gates[gate_id].position[0], self.gates[gate_id].position[1]) for gate_id in self.gates]
+            ):
+            bool_set.append(True)
         else:
-            bool_set.add(False)
+            bool_set.append(False)
+
+        # Check if position contains a Wire
+        if position in [(wire.x, wire.y) for netlist in self.netlists for net_id in netlist.nets2 for wire in netlist.nets2[net_id].wiring]:
+            bool_set.append(True)
+        else:
+            bool_set.append(False)
 
         return bool_set
 
@@ -121,7 +146,7 @@ class Circuit():
         POST: Net object
         """
 
-        return self.netlists[netlist_id - 1].nets[net_id - 1]
+        return self.netlists[netlist_id - 1].nets2[net_id - 1]
 
     
     def get_gate_position(self, gate_id: int) -> tuple[int, int]:
@@ -144,9 +169,12 @@ class Circuit():
         POST: coordinates of type tuple[int, int]
         """
 
+        # Get Net (by ID) in Netlist (by ID) to use as starting point
         net: Net = self.get_net(netlist_id, net_id)
+        
         gate: Gate = net.gates[0]
-        return self.get_gate_position(gate.id)
+        return gate.position
+
 
     def is_connected(self, netlist_id: int, net_id: int) -> bool:
         """
@@ -159,18 +187,19 @@ class Circuit():
         POST: True or False
         """
         
-        netlist = self.netlists[netlist_id - 1]
-        net = netlist.nets[net_id - 1]
-        gate_1, gate_2 = self.gates[net.gates[0].id], self.gates[net.gates[1].id]
+        net: Net = self.get_net(netlist_id, net_id)
+
+        # Get end Gate of a Wire from a Net
+        end_gate: Gate = self.gates[net.gates[1].id]
         
-        if ((net.wiring[0].x, net.wiring[0].y) == gate_1.position and
-            (net.wiring[-1].x, net.wiring[-1].y) == gate_2.position
-        ):
+        # Check if the last Wire in a Net is the position of the end Gate
+        if (net.wiring[-1].x, net.wiring[-1].y) == end_gate.position:
             return True
-        
+
         return False
     
-    def lay_wire(self, netlist_id: int, net_id: int, x: int, y: int) -> None:
+
+    def lay_wire(self, netlist_id: int, net_id: int, position: Position) -> None:
         """
         Lay wire on requested net from netlist.
 
@@ -178,9 +207,10 @@ class Circuit():
         POST: wire of type Wire is added to self.netlists[netlist_id][net_id - 1]
         """
 
-        wire = Wire(x, y)
-        net: Net = self.get_net(netlist_id, net_id - 1)
+        wire = Wire(position[0], position[1])
+        net: Net = self.get_net(netlist_id, net_id)
         net.add_wire(wire)
+
 
     def undo_lay(self, netlist_id: int, net_id: int) -> None:
         """
@@ -190,8 +220,9 @@ class Circuit():
         POST: wire is removed from self.netlists[netlist_id][net_id - 1]
         """
 
-        net: Net = self.get_net(netlist_id, net_id - 1)
+        net: Net = self.get_net(netlist_id, net_id)
         net.unadd_wire()
+
 
     def next_positions(self, netlist_id: int, net_id: int) -> list[tuple[int, int]]:
         """
@@ -202,17 +233,47 @@ class Circuit():
         POST: list with coordinates of type tuple[int, int]
         """
 
-        net: Net = self.get_net(netlist_id, net_id - 1)
+        net: Net = self.get_net(netlist_id, net_id)
+
+        # Get last Wire that was laid down
         last_wire: Wire = net.wiring[-1]
 
-        possible_positions = [(last_wire.x + ix, last_wire.y + iy)
-                               for ix in range(-1, 2, 2)
-                               for iy in range(-1, 2, 2)]
-        
+        considered_positions = [(last_wire.x + dx, last_wire.y + dy) 
+                                for dx, dy 
+                                in [(1, 0), (-1, 0), (0, 1), (0, -1)]]
+
         viable_positions = []
-        for position in possible_positions:
-            bool_set = self.check_position(position[0], position[1])
-            if bool_set[0] == False and bool_set[1] == False:
+        
+        # Iterate over all considered positions
+        for position in considered_positions:
+            # Get bool set of a considered position
+            bool_set = self.check_position(position, netlist_id, net_id)
+
+            # Check if all bools in set are False and the considered position is viable (TODO: use all() if all bools are used, see next comment line)
+            # if all(bool_set == False):
+            if bool_set[0] == False and bool_set[1] == False and bool_set[2] == False:
                 viable_positions.append(position)
 
         return viable_positions
+    
+
+    def connect_gate(self, possible_pos: list[Position], netlist_id: int, net_id: int) -> bool:
+        """
+        Check if last gate's position is in possible positions,
+        if so add the last wire to the requeste net from netlist.
+
+        PRE: possible_pos of type list[tuple[int, int]] and netlist_id and net_id of type int
+        POST: if gate position in possible_pos add wire to self.get_net(netlist_id, net_id)
+        and return True, else False
+        """
+
+        net: Net = self.get_net(netlist_id, net_id)
+        end_gate: Gate = net.gates[-1]
+        end_position = end_gate.position
+
+        if end_gate in possible_pos:
+            self.lay_wire(netlist_id, net_id, end_position)
+            print("FOUND LAST++_+_+_+_+_+_+_+_+_+_+_+_+_+_+")
+            return True
+
+        return False

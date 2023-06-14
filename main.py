@@ -13,8 +13,6 @@ if __name__ == "__main__":
     net_id = (chip * 3) + 1
     circuit = Circuit(f"data/chip_{chip}/print_{chip}.csv")
 
-    print(f"Initial circuit:\n{circuit}")
-
     circuit.load_netlist(f"data/chip_{chip}/netlist_{net_id}.csv")
 
     print(f"Netlist 1 has {len(circuit.netlists[0].nets)} nets")

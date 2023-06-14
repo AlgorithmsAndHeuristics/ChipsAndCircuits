@@ -20,16 +20,19 @@ class Net():
 
         self.wiring.append(wire)
 
+
     def unadd_wire(self) -> None:
         """
         POST: Last wire has been removed from self.wiring"""
         self.wiring.pop()
+
 
     def get_wire_positions(self) -> list[set[int]]:
         """
         POST: Returns list of coördinate sets for all the wires in self.wiring"""
                 
         return [(wire.x, wire.y) for wire in self.wiring]
+
 
     def __repr__(self) -> str:
         """

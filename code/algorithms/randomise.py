@@ -16,29 +16,41 @@ def make_wire(circuit: Circuit, netlist_id: int, net_id: int):
     Repeat until the gates are connected i.e.
     """
 
-    print(circuit)
+    print("-"*15)
+    net = circuit.get_net(netlist_id, net_id)
+    print(f"\nDOING: Gate {net.gates[0]} to Gate {net.gates[1]}")
+    print(f">CIRCUIT NOW:\n\n{circuit}")
 
-    # If wire is connected between the gates of the net it's done
+    # If Wire is connected between the Gates of the Net it's done
     if circuit.is_connected(netlist_id, net_id):
         return circuit
 
-    # Get next possible positions from last wire in wire list of the net
+    # Get viable next possible positions from last Wire in Wire list of the Net
     positions: list[Position] = circuit.next_positions(netlist_id, net_id)
-    
+
+    # If second's Gate position is in possible positions, just go to it by laying Wire
+    if circuit.connect_gate(positions, netlist_id, net_id):
+        return circuit
+
+    random.shuffle(positions)
+    print(f">POSSIBLE POSITIONS: {positions}\n")
 
     # Go off every position (if there are) until connection is found
     for position in positions:
 
-        circuit.lay_wire(netlist_id, net_id, position[0], position[1])
+        print(f">CHOSE: {position}\n")
+
+        circuit.lay_wire(netlist_id, net_id, position)
 
         # Done if rest of the wiring deems succesful
-        if make_wire(circuit):
+        if make_wire(circuit, netlist_id, net_id):
             return circuit
         
-        # Not found so remove last wire
-        circuit.undo_lay()
+        # Not found so remove last Wire
+        circuit.undo_lay(netlist_id, net_id)
 
     return None
+
 
 def make_nets(circuit: Circuit, netlist_id: int):
 
@@ -47,22 +59,28 @@ def make_nets(circuit: Circuit, netlist_id: int):
     # netlist_id goes above 2, and only one netlist is always added anyways (see representation.py)
     print("\n-------START-------")
     netlist = circuit.netlists[netlist_id - 1]
+
+    # Create list of Net IDs from a Netlist
     r_list = list(range(len(netlist.nets)))
+
+    # ipv list[Net] dict[int, Net], waarbij int net ID is en Net het object
+
     random.shuffle(r_list)
 
     for net_id in r_list:
         # id of net in netlist is id in csv - 1 ... fix
         net_id += 1
+        
+        # Get starting position based on Net (by ID) in a Netlist (by ID)
         starting_position: Position = circuit.get_net_start(netlist_id, net_id)
+
+        print(f"netlist_id={netlist_id} | net_id={net_id - 1} | start_pos={starting_position}")
 
         # place first coordinate (of gate, so shouldn't count as wire!) 
         # shouldn't already be done somewhere else?
-        circuit.lay_wire(netlist_id, net_id, starting_position[0], starting_position[1])
+        circuit.lay_wire(netlist_id, net_id, starting_position)
 
         # Make the wire connect to the last gate
         circuit = make_wire(circuit, netlist_id, net_id)
 
         print("-------DONE-------\n")
-        print(circuit)
-        break
-        
