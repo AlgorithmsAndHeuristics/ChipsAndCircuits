@@ -13,6 +13,7 @@ if __name__ == "__main__":
     net_id = (chip * 3) + 1
     circuit = Circuit(f"data/chip_{chip}/print_{chip}.csv")
 
+
     circuit.load_netlist(f"data/chip_{chip}/netlist_{net_id}.csv")
 
     print(f"Netlist 1 has {len(circuit.netlists[0].nets)} nets")
@@ -22,3 +23,8 @@ if __name__ == "__main__":
         print(f"Gate {net.gates[0]} to gate {net.gates[1]}")
 
     make_nets(circuit, net_id)
+
+    print(f"Plotting grid:")
+
+
+    circuit.plot_grid()

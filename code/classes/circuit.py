@@ -4,7 +4,7 @@ from net import Net
 from wire import Wire
 import pandas as pd
 import math
-
+import matplotlib.pyplot as plt
 
 Position = tuple[int, int]
 
@@ -12,7 +12,7 @@ Position = tuple[int, int]
 # TODO: self.layers
 class Circuit():
     
-    def __init__(self, print_path: str, factor: int = 1) -> None:
+    def __init__(self, print_path: str, border: int = 8) -> None:
         """
         PRE: The path to the print_x.csv file of a chip and a growth factor
         POST: Initializes a Circuit object"""
@@ -20,40 +20,59 @@ class Circuit():
         self.netlists: list[Netlist] = []
         self.netlists2: dict[int, Netlist] = dict()
         self.gates: dict[int, Gate] = {}
-        
+        self.border: int = border
+
         print_x = pd.read_csv(print_path)
         
         # Read the gates from the print_x file
         for index, gate in print_x.iterrows():
             self.gates[int(gate[0])] = (Gate(int(gate[0]), (int(gate[1]), int(gate[2]))))
         
-        self.make_grid(factor)
 
+    def plot_grid(self) -> str:  
 
-    def __repr__(self) -> str:  
-        board_str = ""
-        board = self.grid
+        # Extract x, y, and names from the points list
+        x = [gate.position[0] for gate in self.gates.values()]
+        y = [gate.position[1] for gate in self.gates.values()]
+        names = [gate.id for gate in self.gates.values()]
 
-        # Place the wires on the board
+        fig, ax = plt.subplots()
+
+        # Plot the gates in red
+        ax.plot(x, y, 'ro')
+
+        # Add name annotations
+        for i, name in enumerate(names):
+            ax.annotate(name, (x[i], y[i]), textcoords="offset points", xytext=(0, 10), ha='center')
+
+        # Set the labels and title
+        ax.set_xlabel('X')
+        ax.set_ylabel('Y')
+        ax.set_title('Layer 1')
+
+        # Add the wires
         for netlist in self.netlists:
-            for net_id in netlist.nets2:
-                for wire in netlist.nets2[net_id].wiring:
-                    if board[wire.y][wire.x] == '_':
-                        board[wire.y][wire.x] = "-"
+            for index, net in enumerate(netlist.nets2.values()):
+                
 
-        # Place the intersections on the board
-        for netlist in self.netlists:
-            for intersection in netlist.get_intersections():
-                board[intersection.y][intersection.x] = "x"
-        
-        # Turn the board into a string
-        for row in board:
-            for tile in row:
-                board_str += str(tile)
+                for i in range(len(net.wiring)):
+                    if i != len(net.wiring) - 1:
+                        start = (net.wiring[i].x, net.wiring[i].y)
+                        end = (net.wiring[i+1].x, net.wiring[i+1].y)
+                        ax.plot([start[0] , end[0]], [start[1], end[1]], 
+                                ['b-', 'r-', 'g-', 'c-', 'm-', 'y-'][index])                    
 
-            board_str += "\n"
+        # add borders
+        for border in [((-1,-1), (-1,8)),((-1,-1), (8,-1)), ((-1,8), (8,8)), ((8,-1), (8,8))]:
+            start_point = border[0]
+            end_point = border[1]
+            ax.plot([start_point[0] , end_point[0]], [start_point[1], end_point[1]], 'k-')
 
-        return board_str
+        # Show the grid
+        plt.grid(True)
+
+        # Display the plot
+        return plt.show()
 
     
     def check_position(self, position: Position, netlist_id: int, net_id: int) -> list[bool]:
@@ -78,7 +97,7 @@ class Circuit():
         bool_set.append(wire_bool)
         
         # Check if position contains a border (are out of bounds)
-        if position[0] < 0 or position[0] > len(self.grid[0]) - 1 or position[1] < 0 or position[1] > len(self.grid) - 1:
+        if position[0] < 0 or position[0] >= self.border or position[1] < 0 or position[1] >= self.border:
             bool_set.append(True)
         else:
             bool_set.append(False)

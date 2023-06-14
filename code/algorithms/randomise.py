@@ -19,7 +19,8 @@ def make_wire(circuit: Circuit, netlist_id: int, net_id: int):
     print("-"*15)
     net = circuit.get_net(netlist_id, net_id)
     print(f"\nDOING: Gate {net.gates[0]} to Gate {net.gates[1]}")
-    print(f">CIRCUIT NOW:\n\n{circuit}")
+    #print(f">CIRCUIT NOW:\n\n{circuit}")
+
 
     # If Wire is connected between the Gates of the Net it's done
     if circuit.is_connected(netlist_id, net_id):
@@ -82,5 +83,6 @@ def make_nets(circuit: Circuit, netlist_id: int):
 
         # Make the wire connect to the last gate
         circuit = make_wire(circuit, netlist_id, net_id)
+
 
         print("-------DONE-------\n")
