@@ -11,6 +11,10 @@ class Gate():
         self.position = position
 
     
+    def __repr__(self) -> str:
+        return f"{self.id}: {self.position}"
+    
+    
     def get_distance(self, other_gate: 'Gate') -> int:
         """
         Gets the distance between two gates.
@@ -21,6 +25,3 @@ class Gate():
         dy = abs(self.position[1] - other_gate.position[1])
 
         return int(math.sqrt(dx**2 * dy**2))
-    
-    def __repr__(self) -> str:
-        return f"{self.id}: {self.position}"

@@ -13,18 +13,19 @@ class Net():
         self.wiring: list[Wire] = []
 
 
+    def __repr__(self) -> str:
+        """
+        POST: string representation of net"""
+        
+        return f"{self.gates[0]} | {self.gates[1]}"
+
+
     def add_wire(self, wire: Wire) -> None:
         """
         PRE: The x and y coordinates for a wire
         POST: Wire has been added to front of self.wiring"""
 
         self.wiring.append(wire)
-
-
-    def unadd_wire(self) -> None:
-        """
-        POST: Last wire has been removed from self.wiring"""
-        self.wiring.pop()
 
 
     def get_wire_positions(self) -> list[set[int]]:
@@ -34,8 +35,7 @@ class Net():
         return [(wire.x, wire.y) for wire in self.wiring]
 
 
-    def __repr__(self) -> str:
+    def unadd_wire(self) -> None:
         """
-        POST: string representation of net"""
-        
-        return f"{self.gates[0]} | {self.gates[1]}"
+        POST: Last wire has been removed from self.wiring"""
+        self.wiring.pop()

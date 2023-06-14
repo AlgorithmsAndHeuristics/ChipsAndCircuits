@@ -5,7 +5,9 @@ from wire import Wire
 import pandas as pd
 import math
 
+
 Position = tuple[int, int]
+
 
 # TODO: self.layers
 class Circuit():
@@ -26,32 +28,6 @@ class Circuit():
             self.gates[int(gate[0])] = (Gate(int(gate[0]), (int(gate[1]), int(gate[2]))))
         
         self.make_grid(factor)
-    
-
-    def make_grid(self, factor: int) -> None:
-        """
-        Make the grid with a multiplying factor.
-        PRE: Factor of type int, must be larger or equal to 1
-        POST: Grid is dimensions are multiplied by factor,
-        center stays the same"""
-
-        assert factor >= 1, "Can't make grid smaller than minimum distance"
-
-        # Create the grid based on the furthest gates
-        org_width = max([self.gates[id].position[0] for id in self.gates])
-        org_height = max([self.gates[id].position[1] for id in self.gates])
-        grid_width = int(org_width * factor)
-        grid_height = int(org_height * factor)
-        self.grid = [['_' for i in range(grid_width)] for y in range(grid_height)]
-        
-        # Place the gates on the grid
-        x_move = (grid_width - org_width) // 2
-        y_move = (grid_height - org_height) // 2
-
-        for id in self.gates:
-            gate = self.gates[id]
-            gate.position = (gate.position[0] - 1 + x_move, gate.position[1] - 1 + y_move)
-            self.grid[gate.position[1]][gate.position[0]] = gate.id
 
 
     def __repr__(self) -> str:  
@@ -78,14 +54,6 @@ class Circuit():
             board_str += "\n"
 
         return board_str
-    
-    
-    def load_netlist(self, path: str) -> None:
-        """
-        PRE: The path to a netlist_x.csv file
-        POST: Netlist has been added to self.netlists"""
-
-        self.netlists.append(Netlist(path, self.gates))
 
     
     def check_position(self, position: Position, netlist_id: int, net_id: int) -> list[bool]:
@@ -136,17 +104,28 @@ class Circuit():
             bool_set.append(False)
 
         return bool_set
+    
 
-
-    def get_net(self, netlist_id: int, net_id: int) -> Net:
+    def connect_gate(self, possible_pos: list[Position], netlist_id: int, net_id: int) -> bool:
         """
-        Returns requested net.
-        
-        PRE: netlist_id and net_id of type int
-        POST: Net object
+        Check if last gate's position is in possible positions,
+        if so add the last wire to the requeste net from netlist.
+
+        PRE: possible_pos of type list[tuple[int, int]] and netlist_id and net_id of type int
+        POST: if gate position in possible_pos add wire to self.get_net(netlist_id, net_id)
+        and return True, else False
         """
 
-        return self.netlists[netlist_id - 1].nets2[net_id - 1]
+        net: Net = self.get_net(netlist_id, net_id)
+        end_gate: Gate = net.gates[-1]
+        end_position = end_gate.position
+
+        if end_gate in possible_pos:
+            self.lay_wire(netlist_id, net_id, end_position)
+            print("FOUND LAST++_+_+_+_+_+_+_+_+_+_+_+_+_+_+")
+            return True
+
+        return False
 
     
     def get_gate_position(self, gate_id: int) -> tuple[int, int]:
@@ -158,6 +137,17 @@ class Circuit():
         """
 
         return self.gates[gate_id].position
+
+
+    def get_net(self, netlist_id: int, net_id: int) -> Net:
+        """
+        Returns requested net.
+        
+        PRE: netlist_id and net_id of type int
+        POST: Net object
+        """
+
+        return self.netlists[netlist_id - 1].nets2[net_id - 1]
     
 
     def get_net_start(self, netlist_id: int, net_id: int) -> tuple[int, int]:
@@ -210,18 +200,40 @@ class Circuit():
         wire = Wire(position[0], position[1])
         net: Net = self.get_net(netlist_id, net_id)
         net.add_wire(wire)
-
-
-    def undo_lay(self, netlist_id: int, net_id: int) -> None:
+    
+    
+    def load_netlist(self, path: str) -> None:
         """
-        Undo last lay of wire on requested net from netlist.
+        PRE: The path to a netlist_x.csv file
+        POST: Netlist has been added to self.netlists"""
 
-        PRE: netlist_id and net_id of type int
-        POST: wire is removed from self.netlists[netlist_id][net_id - 1]
+        self.netlists.append(Netlist(path, self.gates))
+    
+
+    def make_grid(self, factor: int) -> None:
         """
+        Make the grid with a multiplying factor.
+        PRE: Factor of type int, must be larger or equal to 1
+        POST: Grid is dimensions are multiplied by factor,
+        center stays the same"""
 
-        net: Net = self.get_net(netlist_id, net_id)
-        net.unadd_wire()
+        assert factor >= 1, "Can't make grid smaller than minimum distance"
+
+        # Create the grid based on the furthest gates
+        org_width = max([self.gates[id].position[0] for id in self.gates])
+        org_height = max([self.gates[id].position[1] for id in self.gates])
+        grid_width = int(org_width * factor)
+        grid_height = int(org_height * factor)
+        self.grid = [['_' for i in range(grid_width)] for y in range(grid_height)]
+        
+        # Place the gates on the grid
+        x_move = (grid_width - org_width) // 2
+        y_move = (grid_height - org_height) // 2
+
+        for id in self.gates:
+            gate = self.gates[id]
+            gate.position = (gate.position[0] - 1 + x_move, gate.position[1] - 1 + y_move)
+            self.grid[gate.position[1]][gate.position[0]] = gate.id
 
 
     def next_positions(self, netlist_id: int, net_id: int) -> list[tuple[int, int]]:
@@ -255,25 +267,15 @@ class Circuit():
                 viable_positions.append(position)
 
         return viable_positions
-    
 
-    def connect_gate(self, possible_pos: list[Position], netlist_id: int, net_id: int) -> bool:
+
+    def undo_lay(self, netlist_id: int, net_id: int) -> None:
         """
-        Check if last gate's position is in possible positions,
-        if so add the last wire to the requeste net from netlist.
+        Undo last lay of wire on requested net from netlist.
 
-        PRE: possible_pos of type list[tuple[int, int]] and netlist_id and net_id of type int
-        POST: if gate position in possible_pos add wire to self.get_net(netlist_id, net_id)
-        and return True, else False
+        PRE: netlist_id and net_id of type int
+        POST: wire is removed from self.netlists[netlist_id][net_id - 1]
         """
 
         net: Net = self.get_net(netlist_id, net_id)
-        end_gate: Gate = net.gates[-1]
-        end_position = end_gate.position
-
-        if end_gate in possible_pos:
-            self.lay_wire(netlist_id, net_id, end_position)
-            print("FOUND LAST++_+_+_+_+_+_+_+_+_+_+_+_+_+_+")
-            return True
-
-        return False
+        net.unadd_wire()
