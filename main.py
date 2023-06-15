@@ -24,6 +24,9 @@ if __name__ == "__main__":
 
     make_nets(circuit, net_id)
 
+    print(f"Configuration cost: {sum([netlist.get_cost() for netlist in circuit.netlists])}")
+
+
     print(f"Plotting grid:")
 
 

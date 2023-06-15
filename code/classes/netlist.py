@@ -55,7 +55,11 @@ class Netlist():
                 position = [pos for pos in net1.get_wire_positions() if pos in net2.get_wire_positions()]
 
                 if bool(position):
-                    intersections.add(Intersection(net1, net2, position[0][0], position[0][1]))
+                    # Don't add intersections on gates
+                    if position != net1.gates[0].position and position != net1.gates[1].position and\
+                        position != net2.gates[0].position and position != net2.gates[1].position:
+
+                        intersections.add(Intersection(net1, net2, position[0][0], position[0][1]))
 
         return intersections
     
@@ -65,4 +69,4 @@ class Netlist():
         POST: Returns the current total amount of wires
         in net.wiring for all the nets in the netlist"""
 
-        return sum(len(net.wiring) for _, net in self.nets2)
+        return sum(len(net.wiring) for net in self.nets2.values())
