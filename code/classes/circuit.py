@@ -5,6 +5,8 @@ from wire import Wire
 import pandas as pd
 import math
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.ticker import MaxNLocator
 
 Position = tuple[int, int]
 
@@ -27,52 +29,6 @@ class Circuit():
         # Read the gates from the print_x file
         for index, gate in print_x.iterrows():
             self.gates[int(gate[0])] = (Gate(int(gate[0]), (int(gate[1]), int(gate[2]))))
-        
-
-    def plot_grid(self) -> str:  
-
-        # Extract x, y, and names from the points list
-        x = [gate.position[0] for gate in self.gates.values()]
-        y = [gate.position[1] for gate in self.gates.values()]
-        names = [gate.id for gate in self.gates.values()]
-
-        fig, ax = plt.subplots()
-
-        # Plot the gates in red
-        ax.plot(x, y, 'ro')
-
-        # Add name annotations
-        for i, name in enumerate(names):
-            ax.annotate(name, (x[i], y[i]), textcoords="offset points", xytext=(0, 10), ha='center')
-
-        # Set the labels and title
-        ax.set_xlabel('X')
-        ax.set_ylabel('Y')
-        ax.set_title('Layer 1')
-
-        # Add the wires
-        for netlist in self.netlists:
-            for index, net in enumerate(netlist.nets2.values()):
-                
-
-                for i in range(len(net.wiring)):
-                    if i != len(net.wiring) - 1:
-                        start = (net.wiring[i].x, net.wiring[i].y)
-                        end = (net.wiring[i+1].x, net.wiring[i+1].y)
-                        ax.plot([start[0] , end[0]], [start[1], end[1]], 
-                                ['b-', 'r-', 'g-', 'c-', 'm-', 'y-'][index])                    
-
-        # add borders
-        for border in [((-1,-1), (-1,8)),((-1,-1), (8,-1)), ((-1,8), (8,8)), ((8,-1), (8,8))]:
-            start_point = border[0]
-            end_point = border[1]
-            ax.plot([start_point[0] , end_point[0]], [start_point[1], end_point[1]], 'k-')
-
-        # Show the grid
-        plt.grid(True)
-
-        # Display the plot
-        return plt.show()
 
     
     def check_position(self, position: Position, netlist_id: int, net_id: int) -> list[bool]:
@@ -298,3 +254,95 @@ class Circuit():
 
         net: Net = self.get_net(netlist_id, net_id)
         net.unadd_wire()
+
+
+    def plot_grid_2d(self):  
+
+            # Extract x, y, and names from the gate list
+            x = [gate.position[0] for gate in self.gates.values()]
+            y = [gate.position[1] for gate in self.gates.values()]
+            names = [gate.id for gate in self.gates.values()]
+
+            fig, ax = plt.subplots()
+
+            # Plot the gates in red
+            ax.plot(x, y, 'ro')
+
+            # Add name annotations
+            for i, name in enumerate(names):
+                ax.annotate(name, (x[i], y[i]), textcoords="offset points", xytext=(0, 10), ha='center')
+
+            # Set the labels and title
+            ax.set_xlabel('X')
+            ax.set_ylabel('Y')
+            ax.set_title('Layer 1')
+
+            # Add the wires
+            for netlist in self.netlists:
+                for index, net in enumerate(netlist.nets2.values()):
+                    
+                    for i in range(len(net.wiring)):
+                        if i != len(net.wiring) - 1:
+                            start = (net.wiring[i].x, net.wiring[i].y)
+                            end = (net.wiring[i+1].x, net.wiring[i+1].y)
+                            ax.plot([start[0] , end[0]], [start[1], end[1]], 
+                                    ['b-', 'r-', 'g-', 'c-', 'm-', 'y-'][index])                    
+
+            # add borders
+            for border in [((-1,-1), (-1,8)),((-1,-1), (8,-1)), ((-1,8), (8,8)), ((8,-1), (8,8))]:
+                start_point = border[0]
+                end_point = border[1]
+                ax.plot([start_point[0] , end_point[0]], [start_point[1], end_point[1]], 'k-')
+
+            # Show the grid
+            plt.grid(True)
+
+            # Display the plot
+            return plt.show()
+
+
+    def plot_grid_3d(self, title: str = "Circuit"):
+        fig = plt.figure(figsize=(16, 12))
+        ax = fig.add_subplot(111, projection='3d')
+        
+
+
+        # add the gates to the plot
+        for gate in self.gates.values():
+            x, y, z, label = gate.position[0], gate.position[1], 0, gate.id
+            ax.scatter(x, y, z, label=label)
+            ax.text(x, y, z + 0.2, label, ha='center', va='bottom')
+
+        plot_handles = []
+        plot_labels = []
+        
+        # Get the wire coördinates per net
+        for net in self.netlists[0].nets2.values():
+            x = [wire.x for wire in net.wiring]
+            y = [wire.y for wire in net.wiring]
+            z = [wire.z for wire in net.wiring]
+            line, = ax.plot(x, y, z)
+            
+            # Add the net descriptions to the legend
+            plot_handles.append(line)
+            plot_labels.append(f'Gate {net.gates[0].id} to {net.gates[1].id}')
+
+
+        ax.set_xlabel('X')
+        ax.set_ylabel('Y')
+        ax.set_zlabel('Z')
+        ax.set_title(title)
+        
+        # Limit the Z-axys and only keep whole numbers on its label
+        ax.set_zlim(0, 4)
+        ax.zaxis.set_major_locator(MaxNLocator(integer=True))
+        
+        ax.legend(plot_handles, plot_labels,loc='upper left')
+        
+        # Align the bottom grid with z=0
+        ax.zaxis.offsetText.set_position((0, 0))
+
+
+        #plt.legend([f'Netlist cost: {self.netlists[0].get_cost()}'], loc='lower right')
+
+        plt.show()

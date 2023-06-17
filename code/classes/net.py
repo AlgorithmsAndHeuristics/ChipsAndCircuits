@@ -32,7 +32,7 @@ class Net():
         """
         POST: Returns list of coördinate sets for all the wires in self.wiring"""
                 
-        return [(wire.x, wire.y) for wire in self.wiring]
+        return [(wire.x, wire.y, wire.z) for wire in self.wiring]
 
 
     def unadd_wire(self) -> None:
