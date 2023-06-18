@@ -30,4 +30,4 @@ if __name__ == "__main__":
     print(f"Plotting grid:")
 
 
-    circuit.plot_grid_3d("Chip 0, Netlist 1")
+    circuit.plot_grid("Chip 0, Netlist 1")

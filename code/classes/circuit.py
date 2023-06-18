@@ -73,7 +73,7 @@ class Circuit():
             bool_set.append(False)
 
         # Check if position contains a Wire
-        if position in [(wire.x, wire.y) for netlist in self.netlists for net_id in netlist.nets2 for wire in netlist.nets2[net_id].wiring]:
+        if position in [(wire.x, wire.y, wire.z) for netlist in self.netlists for net_id in netlist.nets2 for wire in netlist.nets2[net_id].wiring]:
             bool_set.append(True)
         else:
             bool_set.append(False)
@@ -256,52 +256,7 @@ class Circuit():
         net.unadd_wire()
 
 
-    def plot_grid_2d(self):  
-
-            # Extract x, y, and names from the gate list
-            x = [gate.position[0] for gate in self.gates.values()]
-            y = [gate.position[1] for gate in self.gates.values()]
-            names = [gate.id for gate in self.gates.values()]
-
-            fig, ax = plt.subplots()
-
-            # Plot the gates in red
-            ax.plot(x, y, 'ro')
-
-            # Add name annotations
-            for i, name in enumerate(names):
-                ax.annotate(name, (x[i], y[i]), textcoords="offset points", xytext=(0, 10), ha='center')
-
-            # Set the labels and title
-            ax.set_xlabel('X')
-            ax.set_ylabel('Y')
-            ax.set_title('Layer 1')
-
-            # Add the wires
-            for netlist in self.netlists:
-                for index, net in enumerate(netlist.nets2.values()):
-                    
-                    for i in range(len(net.wiring)):
-                        if i != len(net.wiring) - 1:
-                            start = (net.wiring[i].x, net.wiring[i].y)
-                            end = (net.wiring[i+1].x, net.wiring[i+1].y)
-                            ax.plot([start[0] , end[0]], [start[1], end[1]], 
-                                    ['b-', 'r-', 'g-', 'c-', 'm-', 'y-'][index])                    
-
-            # add borders
-            for border in [((-1,-1), (-1,8)),((-1,-1), (8,-1)), ((-1,8), (8,8)), ((8,-1), (8,8))]:
-                start_point = border[0]
-                end_point = border[1]
-                ax.plot([start_point[0] , end_point[0]], [start_point[1], end_point[1]], 'k-')
-
-            # Show the grid
-            plt.grid(True)
-
-            # Display the plot
-            return plt.show()
-
-
-    def plot_grid_3d(self, title: str = "Circuit"):
+    def plot_grid(self, title: str = "Circuit"):
         fig = plt.figure(figsize=(16, 12))
         ax = fig.add_subplot(111, projection='3d')
         
@@ -310,7 +265,7 @@ class Circuit():
         # add the gates to the plot
         for gate in self.gates.values():
             x, y, z, label = gate.position[0], gate.position[1], 0, gate.id
-            ax.scatter(x, y, z, label=label)
+            ax.scatter(x, y, z, label=label, color="red")
             ax.text(x, y, z + 0.2, label, ha='center', va='bottom')
 
         plot_handles = []
@@ -324,9 +279,16 @@ class Circuit():
             line, = ax.plot(x, y, z)
             
             # Add the net descriptions to the legend
-            plot_handles.append(line)
-            plot_labels.append(f'Gate {net.gates[0].id} to {net.gates[1].id}')
+            #plot_handles.append(line)
+            #plot_labels.append(f'Gate {net.gates[0].id} to {net.gates[1].id}')
 
+  
+        plot_labels.append(f"Gate count: {len(self.gates)}")
+        plot_labels.append(f"Net count: {len(self.netlists[0].nets2.values())}")
+        plot_labels.append(f"Wire count: {self.netlists[0].get_wire_count()}")
+        plot_labels.append(f"Intersection count: {len(self.netlists[0].get_intersections())}")
+        plot_labels.append("")
+        plot_labels.append(f"Netlist cost: {self.netlists[0].get_cost()}")
 
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
@@ -336,9 +298,12 @@ class Circuit():
         # Limit the Z-axys and only keep whole numbers on its label
         ax.set_zlim(0, 4)
         ax.zaxis.set_major_locator(MaxNLocator(integer=True))
-        
-        ax.legend(plot_handles, plot_labels,loc='upper left')
-        
+
+
+        ax.legend(plot_labels,loc='upper right',bbox_to_anchor=(1.35, 1), handlelength = 0)
+
+
+
         # Align the bottom grid with z=0
         ax.zaxis.offsetText.set_position((0, 0))
 
