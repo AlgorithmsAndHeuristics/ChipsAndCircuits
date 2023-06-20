@@ -9,6 +9,9 @@ class Gate():
 
         self.id = id
         self.position = position
+        # NOTE fix position z axis
+        # either in function var or
+        # self.position = (position[0], position[1], 0)
 
     
     def __repr__(self) -> str:

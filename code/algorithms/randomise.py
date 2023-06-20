@@ -1,6 +1,4 @@
 from code.classes.circuit import Circuit
-from code.classes.netlist import Netlist
-from code.classes.net import Net
 
 import random
 

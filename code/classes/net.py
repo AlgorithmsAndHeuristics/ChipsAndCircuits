@@ -28,6 +28,17 @@ class Net():
         self.wiring.append(wire)
 
 
+    def direct_distance(self) -> int:
+        """
+        Get the direct distance between the gates.
+
+        POST: distance of type int
+        """
+
+        gate_1, gate_2 = self.gates[0], self.gates[1]
+        return sum(tuple(abs(i - j) for i, j in zip(gate_1.position, gate_2.position)))
+        
+
     def get_wire_positions(self) -> list[set[int]]:
         """
         POST: Returns list of coördinate sets for all the wires in self.wiring"""
@@ -39,3 +50,4 @@ class Net():
         """
         POST: Last wire has been removed from self.wiring"""
         self.wiring.pop()
+

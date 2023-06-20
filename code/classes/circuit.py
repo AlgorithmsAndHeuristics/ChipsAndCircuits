@@ -30,7 +30,23 @@ class Circuit():
         for index, gate in print_x.iterrows():
             self.gates[int(gate[0])] = (Gate(int(gate[0]), (int(gate[1]), int(gate[2]))))
 
-    
+
+    def any_intersections(self, netlist_id: int) -> bool:
+        """
+        Check if there are any intersections.
+
+        PRE: netlist_id of type int
+        POST: returns False if there aren't any intersections,
+        else True
+        """
+
+        netlist = self.netlists[netlist_id  - 1]
+        # No intersections if list is empty
+        if len(netlist.get_intersections()) == 0:
+            return False
+        return True
+
+
     def check_position(self, position: Position, netlist_id: int, net_id: int) -> list[bool]:
         """
         PRE: x and y coördinates of a position on the grid
@@ -102,7 +118,7 @@ class Circuit():
 
         return False
 
-    
+
     def get_gate_position(self, gate_id: int) -> tuple[int, int]:
         """
         Returns requested gate's position.
@@ -164,6 +180,105 @@ class Circuit():
         return False
     
 
+    def lay_shortest_line(self, netlist_id: int, net_id: int) -> None:
+        """
+        Connect the gates in requested net from netlist with (one of the) the shortest line(s).
+        x & y are not always same length, so method is to +1 them equally first,
+        until one is completed, and then finish either one.
+
+        PRE: netlist_id and net_id of type int
+        POST: Gates from self.netlists[netlist_id][net_id - 1] are
+        connected with the shortest line
+        """
+
+        net: Net = self.get_net(netlist_id, net_id)
+        gates: tuple[Gate, Gate] = net.gates
+        position = gates[0].position
+        end_position = gates[1].position
+
+        # Direction for x
+        if position[0] < end_position[0]:
+            x_direction = 1
+        else:
+            x_direction = -1
+
+        # Direction for y
+        if position[1] < end_position[1]:
+            y_direction = 1
+        else:
+            y_direction = -1
+
+        # Var for axis switch, x = 1 / y = -1
+        axis = 1
+
+        while True:
+            wire = Wire(position[0], position[1], 0)
+            net.add_wire(wire)
+
+            # If last added wire was not end_position, make new position
+            if position != end_position:
+                # Create position for x axis if it isn't already on end position
+                if axis == 1:
+                    if position[0] != end_position[0]:
+                        position = (position[0] + x_direction, position[1])
+                    else:
+                        position = (position[0], position[1] + y_direction)
+
+                    # Only switch axis if that axis isn't already on end position
+                    if position[1] != end_position[1]:
+                        axis = -1
+
+                    continue
+
+                # Create position for y axis
+                else:
+                    if position[1] != end_position[1]:
+                        position = (position[0], position[1] + y_direction)
+                    else:
+                        position = (position[0] + x_direction, position[1])
+
+                    if position[0] != end_position[0]:
+                        axis = 1
+
+                    continue
+
+            else:
+                break
+
+
+    def move_level(self, netlist_id: int, net_id: int, direction: int, n_level: int) -> None:
+        """
+        Move the wire of requested net from netlist a level in asked direction.
+        Depending on n_level it will move that amount of layers up or down.
+        The 'movement' only happens at the first and last coordinate.
+
+        PRE: netlist_id, net_id, direction and n_level of type int,
+        direction is either 1 or -1 and n_level > 0
+        POST: line from self.netlists[netlist_id][net_id - 1] is moved a layer
+        in 'direction' of direction and n times according to n_level
+        """
+
+        net: Net = self.get_net(netlist_id, net_id)
+        wiring: list[Wire] = net.wiring
+
+        # Move all wires except first and list to correct layer
+        for wire in wiring[1:-1]:
+            wire.z = n_level * direction
+
+        # Connect first wire to the rest of the wires
+        first_wire = wiring[0]
+        for level in range(1, n_level + 1):
+            wiring.insert(level, Wire(first_wire.x, first_wire.y, level * direction))
+
+        # Connect last wire to the rest of the wires
+        last_wire = wiring[-1]
+        for level in reversed(range(1, n_level + 1)):
+            wiring.insert(len(wiring) - 1, Wire(last_wire.x, last_wire.y, level * direction))
+
+        # Update wiring of the net // NOTE it's needed?
+        net.wiring = wiring
+
+
     def lay_wire(self, netlist_id: int, net_id: int, position: Position) -> None:
         """
         Lay wire on requested net from netlist.
@@ -176,6 +291,21 @@ class Circuit():
         net: Net = self.get_net(netlist_id, net_id)
         net.add_wire(wire)
     
+
+    def list_shortest_distance(self, netlist_id: int) -> list[int]:
+        """
+        Sort the gate distances of the nets from shortest to longest.
+
+        PRE: netlist_id of type int
+        POST: list[netlist_id] where netlist_id is of type int
+        """
+
+        netlist = self.netlists[netlist_id - 1]
+        distances = netlist.direct_distances()
+        # sort on the second value i.e. distance of the distances list,
+        # and put only the net_id in the list.
+        return [i for i, j in sorted(distances, key=lambda x: x[1])]
+
     
     def load_netlist(self, path: str) -> None:
         """

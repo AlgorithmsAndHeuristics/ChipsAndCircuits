@@ -29,6 +29,23 @@ class Netlist():
         return False
     
     
+    def direct_distances(self) -> int:
+        """
+        Get all the direct distances of the nets.
+
+        POST: returns a list of tuples of type tuple[int, int]:
+        (net_id, distance)
+        """
+
+        distance_list = []
+        for net_id in self.nets2:
+            net = self.nets2[net_id]
+            distance = net.direct_distance()
+            distance_list.append((net_id, distance))
+
+        return distance_list
+
+
     def get_cost(self) -> int:
         """
         POST: Return the cost of the netlist, according to the formula: C = n + 300 * k"""
@@ -52,14 +69,23 @@ class Netlist():
                 net2: Net = self.nets2[j]
 
                 # Check if the two Nets share a wire position
-                position = [pos for pos in net1.get_wire_positions() if pos in net2.get_wire_positions()]
+                positions = [pos for pos in net1.get_wire_positions() if pos in net2.get_wire_positions()]
 
-                if bool(position):
+                if bool(positions):
+                    #TODO FIX THIS IN gate.py
+                    net1_gate1_position = net1.gates[0].position
+                    net1_gate1_position = (net1_gate1_position[0], net1_gate1_position[1], 0)
+                    net1_gate2_position = net1.gates[1].position
+                    net1_gate2_position = (net1_gate2_position[0], net1_gate2_position[1], 0)
+                    net2_gate1_position= net2.gates[0].position
+                    net2_gate1_position = (net2_gate1_position[0], net2_gate1_position[1], 0)
+                    net2_gate2_position = net2.gates[1].position
+                    net2_gate2_position = (net2_gate2_position[0], net2_gate2_position[1], 0)
                     # Don't add intersections on gates
-                    if position != net1.gates[0].position and position != net1.gates[1].position and\
-                        position != net2.gates[0].position and position != net2.gates[1].position:
-
-                        intersections.add(Intersection(net1, net2, position[0][0], position[0][1]))
+                    for position in positions:
+                        if position != net1_gate1_position and position != net1_gate2_position and\
+                            position != net2_gate1_position and position != net2_gate2_position:
+                            intersections.add(Intersection(net1, net2, position[0], position[1], position[2]))
 
         return intersections
     
