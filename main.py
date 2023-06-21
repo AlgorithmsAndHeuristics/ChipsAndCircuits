@@ -5,15 +5,19 @@ sys.path.append(os.path.join(directory, "code", "classes"))
 sys.path.append(os.path.join(directory, "code", "algorithms"))
 
 from circuit import Circuit
+from hill_climber import HillClimber
 from state_pruner import make_nets
 
 
 if __name__ == "__main__":
+    use_hill_climber: bool = False
+    
     chip = 0
     net =  2
     net = (chip * 3) + net
     #NOTE PROBLEM OF CIRCUIT CLASS
     net_id = 1
+    
     circuit = Circuit(f"data/chip_{chip}/print_{chip}.csv")
 
 
@@ -29,8 +33,20 @@ if __name__ == "__main__":
 
     print(f"Configuration cost: {sum([netlist.get_cost() for netlist in circuit.netlists])}")
 
-
+    # ----------
+    
+    if use_hill_climber:
+        # Joey's algorithm
+        hill_climber: HillClimber = HillClimber(circuit)
+        
+        # Just do 10 iterations (an arbitrary amount) for now
+        for _ in range(10):
+            hill_climber.make_incremental_change()
+    
+    # ----------
+    
     print(f"Plotting grid:")
 
 
     circuit.plot_grid("Chip 0, Netlist 1")
+
