@@ -1,5 +1,4 @@
 from code.classes.circuit import Circuit
-
 import random
 
 Position = tuple[int, int]
@@ -34,12 +33,15 @@ def make_wire(circuit: Circuit, netlist_id: int, net_id: int):
     random.shuffle(positions)
     print(f">POSSIBLE POSITIONS: {positions}\n")
 
-    # Go off every position (if there are) until connection is found
+    # Go off every position (if there are any) until connection is found
     for position in positions:
+
+        
 
         print(f">CHOSE: {position}\n")
 
         circuit.lay_wire(netlist_id, net_id, position)
+
 
         # Done if rest of the wiring deems succesful
         if make_wire(circuit, netlist_id, net_id):
@@ -47,6 +49,7 @@ def make_wire(circuit: Circuit, netlist_id: int, net_id: int):
         
         # Not found so remove last Wire
         circuit.undo_lay(netlist_id, net_id)
+
 
     return None
 

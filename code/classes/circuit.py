@@ -287,7 +287,7 @@ class Circuit():
         POST: wire of type Wire is added to self.netlists[netlist_id][net_id - 1]
         """
 
-        wire = Wire(position[0], position[1])
+        wire = Wire(position[0], position[1], 0)
         net: Net = self.get_net(netlist_id, net_id)
         net.add_wire(wire)
     
@@ -387,10 +387,14 @@ class Circuit():
 
 
     def plot_grid(self, title: str = "Circuit"):
+        """
+        Pre: self and a title
+        Post: returns a 3D plot representing the gates and wires
+        """
+
+        "Make a 3D figure"
         fig = plt.figure(figsize=(16, 12))
         ax = fig.add_subplot(111, projection='3d')
-        
-
 
         # add the gates to the plot
         for gate in self.gates.values():
@@ -408,36 +412,35 @@ class Circuit():
             z = [wire.z for wire in net.wiring]
             line, = ax.plot(x, y, z)
             
-            # Add the net descriptions to the legend
-            #plot_handles.append(line)
-            #plot_labels.append(f'Gate {net.gates[0].id} to {net.gates[1].id}')
+            # Add the net descriptions to the first legend
+            plot_handles.append(line)
+            plot_labels.append(f'Gate {net.gates[0].id} to {net.gates[1].id}')
 
-  
-        plot_labels.append(f"Gate count: {len(self.gates)}")
-        plot_labels.append(f"Net count: {len(self.netlists[0].nets2.values())}")
-        plot_labels.append(f"Wire count: {self.netlists[0].get_wire_count()}")
-        plot_labels.append(f"Intersection count: {len(self.netlists[0].get_intersections())}")
-        plot_labels.append("")
-        plot_labels.append(f"Netlist cost: {self.netlists[0].get_cost()}")
+        # Add the first legend
+        legend_1 = plt.legend(plot_handles, plot_labels, loc='upper right', bbox_to_anchor=(0, 1))
+        plt.gca().add_artist(legend_1)
+
+        # Make descriptive labels for the second legend
+        plot_labels2 = []
+        plot_labels2.append(f"Gate count: {len(self.gates)}")
+        plot_labels2.append(f"Net count: {len(self.netlists[0].nets2.values())}")
+        plot_labels2.append(f"Wire count: {self.netlists[0].get_wire_count()}")
+        plot_labels2.append(f"Intersection count: {len(self.netlists[0].get_intersections())}")
+        plot_labels2.append("")
+        plot_labels2.append(f"Netlist cost: {self.netlists[0].get_cost()}")
+
+        # Add the second legend
+        plt.legend(plot_labels2, loc='lower right', bbox_to_anchor=(1.4, 0.6), handlelength=0)
 
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
         ax.set_title(title)
         
-        # Limit the Z-axys and only keep whole numbers on its label
+        # Limit the Z-axys and only take steps of 1
         ax.set_zlim(0, 4)
-        ax.zaxis.set_major_locator(MaxNLocator(integer=True))
-
-
-        ax.legend(plot_labels,loc='upper right',bbox_to_anchor=(1.35, 1), handlelength = 0)
-
-
-
-        # Align the bottom grid with z=0
-        ax.zaxis.offsetText.set_position((0, 0))
-
-
-        #plt.legend([f'Netlist cost: {self.netlists[0].get_cost()}'], loc='lower right')
+        ax.xaxis.set_major_locator(MaxNLocator(integer=True, steps=[1]))
+        ax.yaxis.set_major_locator(MaxNLocator(integer=True, steps=[1]))
+        ax.zaxis.set_major_locator(MaxNLocator(integer=True, steps=[1]))
 
         plt.show()
