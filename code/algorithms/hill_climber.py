@@ -1,5 +1,6 @@
 from circuit import Circuit
 from collections import defaultdict
+from manhattan_path import make_manhattan_connection
 from net import Net
 from netlist import Netlist
 from wire import Wire
@@ -8,7 +9,10 @@ from wire import Wire
 class HillClimber():
     
     def __init__(self, circuit: Circuit) -> None:
-        self.netlist: Netlist = circuit.netlists[0]
+        netlist_id: int = 0
+        
+        self.circuit: Circuit = circuit
+        self.netlist: Netlist = circuit.netlists[netlist_id]
         
         # Track rewired nets to prevent re-rewiring
         self.rewired_nets: list[Net] = []
@@ -22,6 +26,11 @@ class HillClimber():
         for net in self.get_nets_with_colliding_coordinates():
             # Clear wiring of nets with colliding coordinates
             net.clear_wiring()
+            
+            # Re-create wiring of nets with previously colliding coordinates
+            #make_manhattan_connection(net)
+            net_id: int = list(self.netlist.nets.keys())[list(self.netlist.nets.values()).index(net)]
+            circuit.lay_shortest_line(netlist_id, net_id)
     
     
     def get_colliding_coordinates(self) -> list[tuple[int, int, int]]:

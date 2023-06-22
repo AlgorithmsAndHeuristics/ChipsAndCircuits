@@ -31,18 +31,10 @@ if __name__ == "__main__":
 
     make_nets(circuit, net_id)
 
-    print(f"Configuration cost: {sum([netlist.get_cost() for netlist in circuit.netlists])}")
-
-    # ----------
-    
     if use_hill_climber:
-        # Joey's algorithm
         hill_climber: HillClimber = HillClimber(circuit)
     
-    # ----------
-    
+    print(f"Configuration cost: {sum([netlist.get_cost() for netlist in circuit.netlists])}")
     print(f"Plotting grid:")
 
-
     circuit.plot_grid("Chip 0, Netlist 1")
-
