@@ -138,7 +138,7 @@ class Circuit():
         POST: Net object
         """
 
-        return self.netlists[netlist_id - 1].nets2[net_id - 1]
+        return self.netlists[0].nets2[net_id - 1]
     
 
     def get_net_start(self, netlist_id: int, net_id: int) -> tuple[int, int]:

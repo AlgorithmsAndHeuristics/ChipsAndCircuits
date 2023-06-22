@@ -60,7 +60,7 @@ def make_nets(circuit: Circuit, netlist_id: int):
     # netlist_id - 1 CURRENTLY NOT ALWAYS CORRECT, 
     # netlist_id goes above 2, and only one netlist is always added anyways (see representation.py)
     print("\n-------START-------")
-    netlist = circuit.netlists[netlist_id - 1]
+    netlist = circuit.netlists[0]
 
     # Create list of Net IDs from a Netlist
     r_list = list(range(len(netlist.nets)))
