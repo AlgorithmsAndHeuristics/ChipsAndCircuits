@@ -16,6 +16,10 @@ class Netlist():
         self.nets: dict[int, Net] = { i: Net(gates[net['chip_a']], gates[net['chip_b']]) for i, net in df.iterrows() }
     
     
+    def __iter__(self):
+        return iter(self.nets.values())
+    
+    
     def check_intersection(self, net1: Net, net2: Net) -> bool:
         """
         Check if a connection between two Nets has an intersection"""
@@ -88,10 +92,6 @@ class Netlist():
                             intersections.add(Intersection(net1, net2, position[0], position[1], position[2]))
 
         return intersections
-    
-    
-    def get_nets(self) -> list[Net]:
-        return self.nets.values()
     
     
     def get_wire_count(self) -> int:
