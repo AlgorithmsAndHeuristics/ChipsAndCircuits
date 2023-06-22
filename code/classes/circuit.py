@@ -20,7 +20,6 @@ class Circuit():
         POST: Initializes a Circuit object"""
 
         self.netlists: list[Netlist] = []
-        #self.netlists2: dict[int, Netlist] = dict()
         self.gates: dict[int, Gate] = {}
         self.border: int = border
 
@@ -41,9 +40,11 @@ class Circuit():
         """
 
         netlist = self.netlists[netlist_id  - 1]
+        
         # No intersections if list is empty
         if len(netlist.get_intersections()) == 0:
             return False
+        
         return True
 
 
@@ -89,7 +90,7 @@ class Circuit():
             bool_set.append(False)
 
         # Check if position contains a Wire
-        if position in [(wire.x, wire.y, wire.z) for netlist in self.netlists for net_id in netlist.nets2 for wire in netlist.nets2[net_id].wiring]:
+        if position in [(wire.x, wire.y, wire.z) for netlist in self.netlists for net_id in netlist.nets for wire in netlist.nets[net_id].wiring]:
             bool_set.append(True)
         else:
             bool_set.append(False)
@@ -138,7 +139,7 @@ class Circuit():
         POST: Net object
         """
 
-        return self.netlists[0].nets2[net_id - 1]
+        return self.netlists[0].nets[net_id - 1]
     
 
     def get_net_start(self, netlist_id: int, net_id: int) -> tuple[int, int]:
@@ -406,7 +407,7 @@ class Circuit():
         plot_labels = []
         
         # Get the wire coördinates per net
-        for net in self.netlists[0].nets2.values():
+        for net in self.netlists[0].nets.values():
             x = [wire.x for wire in net.wiring]
             y = [wire.y for wire in net.wiring]
             z = [wire.z for wire in net.wiring]
@@ -423,7 +424,7 @@ class Circuit():
         # Make descriptive labels for the second legend
         plot_labels2 = []
         plot_labels2.append(f"Gate count: {len(self.gates)}")
-        plot_labels2.append(f"Net count: {len(self.netlists[0].nets2.values())}")
+        plot_labels2.append(f"Net count: {len(self.netlists[0].nets.values())}")
         plot_labels2.append(f"Wire count: {self.netlists[0].get_wire_count()}")
         plot_labels2.append(f"Intersection count: {len(self.netlists[0].get_intersections())}")
         plot_labels2.append("")

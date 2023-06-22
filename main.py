@@ -23,10 +23,10 @@ if __name__ == "__main__":
 
     circuit.load_netlist(f"data/chip_{chip}/netlist_{net}.csv")
 
-    print(f"Netlist 1 has {len(circuit.netlists[0].nets2)} nets")
+    print(f"Netlist 1 has {len(circuit.netlists[0].nets)} nets")
     print(f"A connection is required from gates:")
 
-    for net in circuit.netlists[0].nets2.values():
+    for net in circuit.netlists[0].nets.values():
         print(f"Gate {net.gates[0]} to gate {net.gates[1]}")
 
     make_nets(circuit, net_id)
