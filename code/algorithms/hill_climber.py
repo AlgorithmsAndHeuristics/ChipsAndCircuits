@@ -10,14 +10,16 @@ class HillClimber():
             nets = sorted(netlist.nets2.values(), key=lambda net: len(net.wiring), reverse=True)
             
             for net in nets:
+                print(f'Wiring (old): {net.wiring}')
                 wiring = defaultdict(list)
                 
                 for wire in net.wiring:
                     # Group wiring by Z-coordinate
                     wiring[wire.z].append(wire)
-                
-                print(f'Wiring (z=0): {wiring[0]}')
-                print(f'Wiring (z=1): {wiring[1]}')
+                    
+                # Shorten wiring by retaining the largest wiring group
+                net.wiring = wiring[max(wiring, key=lambda wire: wire)]
+                print(f'Wiring (new): {net.wiring}')
                 
                 # Temporary: Stop after the first wire
                 break
