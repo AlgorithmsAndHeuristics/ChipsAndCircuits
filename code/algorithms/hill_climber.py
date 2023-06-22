@@ -19,7 +19,7 @@ class HillClimber():
     
     
     def get_colliding_coordinates(self) -> list[tuple[int, int, int]]:
-        # NOTE: Tracking wire objects will not work because they are never identical in Python even though their coordinates are
+        # NOTE: Wire.__eq__ is not used here because gate coordinates must be considered as well
         coordinates: list[tuple[int, int, int]] = []
         colliding_coordinates: list[tuple[int, int, int]] = []
         

@@ -4,6 +4,14 @@ from gate import Gate
 
 class Net():
     
+    def __eq__(self, other: any): 
+        if not isinstance(other, Gate):
+            # Do not attempt to compare against unrelated types
+            return NotImplemented
+
+        return self.gates == other.gates and self.wiring == other.wiring
+    
+    
     def __init__(self, gate_a: Gate, gate_b: Gate):
         """
         PRE: The chip_id's of the two chips to be connected
