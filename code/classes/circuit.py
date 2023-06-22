@@ -20,7 +20,7 @@ class Circuit():
         POST: Initializes a Circuit object"""
 
         self.netlists: list[Netlist] = []
-        self.netlists2: dict[int, Netlist] = dict()
+        #self.netlists2: dict[int, Netlist] = dict()
         self.gates: dict[int, Gate] = {}
         self.border: int = border
 

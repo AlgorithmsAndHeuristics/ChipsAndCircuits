@@ -10,7 +10,7 @@ from state_pruner import make_nets
 
 
 if __name__ == "__main__":
-    use_hill_climber: bool = False
+    use_hill_climber: bool = True
     
     chip = 0
     net =  1
@@ -23,10 +23,10 @@ if __name__ == "__main__":
 
     circuit.load_netlist(f"data/chip_{chip}/netlist_{net}.csv")
 
-    print(f"Netlist 1 has {len(circuit.netlists[0].nets)} nets")
+    print(f"Netlist 1 has {len(circuit.netlists[0].nets2)} nets")
     print(f"A connection is required from gates:")
 
-    for net in circuit.netlists[0].nets:
+    for net in circuit.netlists[0].nets2.values():
         print(f"Gate {net.gates[0]} to gate {net.gates[1]}")
 
     make_nets(circuit, net_id)
@@ -38,10 +38,6 @@ if __name__ == "__main__":
     if use_hill_climber:
         # Joey's algorithm
         hill_climber: HillClimber = HillClimber(circuit)
-        
-        # Just do 10 iterations (an arbitrary amount) for now
-        for _ in range(10):
-            hill_climber.make_incremental_change()
     
     # ----------
     
