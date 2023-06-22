@@ -13,7 +13,7 @@ class Netlist():
 
         # Load the data from the csv
         df = pd.read_csv(netlist_path)
-        self.nets: list[Net] = [Net(gates[net['chip_a']], gates[net['chip_b']]) for _, net in df.iterrows()]
+        #self.nets: list[Net] = [Net(gates[net['chip_a']], gates[net['chip_b']]) for _, net in df.iterrows()]
         self.nets2: dict[int, Net] = { i: Net(gates[net['chip_a']], gates[net['chip_b']]) for i, net in df.iterrows() }
     
     

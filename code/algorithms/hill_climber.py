@@ -4,18 +4,13 @@ from circuit import Circuit
 class HillClimber():
     
     def __init__(self, circuit: Circuit) -> None:
-        self.circuit = circuit
-
-
-    def make_incremental_change(self) -> None:
-        for netlist in self.circuit.netlists:
-            print(f"Wire count: {netlist.get_wire_count()}")
+        for netlist in circuit.netlists:
+            # Sort nets by wire length from longest to shortest
+            nets = sorted(netlist.nets2.values(), key=lambda net: len(net.wiring), reverse=True)
             
-            for _, net in netlist.nets2.items():
+            for net in nets:
+                print(f'\nlen(net.wiring): {len(net.wiring)}')
+                
                 for wire in net.wiring:
-                    print(f"Wire: {wire}")
-                    break
-                    
-                break
-            
-            break
+                    print(f'Wire: {wire}')
+
