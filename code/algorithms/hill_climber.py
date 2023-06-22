@@ -23,7 +23,7 @@ class HillClimber():
         coordinates: list[tuple[int, int, int]] = []
         colliding_coordinates: list[tuple[int, int, int]] = []
         
-        for net in self.netlist.nets.values():
+        for net in self.netlist.get_nets():
             for wire in net.wiring:
                 coordinate: tuple[int, int, int] = (wire.x, wire.y, wire.z)
                 
@@ -40,7 +40,7 @@ class HillClimber():
     def get_nets_with_colliding_coordinates(self) -> set[Net]:
         nets: set[Net] = set()
         
-        for net in self.netlist.nets.values():
+        for net in self.netlist.get_nets():
             for wire in net.wiring:
                 coordinate: tuple[int, int, int] = (wire.x, wire.y, wire.z)
                 
@@ -54,7 +54,7 @@ class HillClimber():
     
     def shorten_longest_wire(self) -> None:
         # Sort nets by wire length from longest to shortest
-        nets = sorted(self.netlist.nets.values(), key=lambda net: len(net.wiring), reverse=True)
+        nets = sorted(self.netlist.get_nets(), key=lambda net: len(net.wiring), reverse=True)
         
         for net in nets:
             # Get first wire to match gates

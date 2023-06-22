@@ -90,6 +90,10 @@ class Netlist():
         return intersections
     
     
+    def get_nets(self) -> list[Net]:
+        return self.nets.values()
+    
+    
     def get_wire_count(self) -> int:
         """
         POST: Returns the current total amount of wires
