@@ -10,12 +10,18 @@ class HillClimber():
     def __init__(self, circuit: Circuit) -> None:
         self.netlist: Netlist = circuit.netlists[0]
         
+        # Track rewired nets to prevent re-rewiring
+        self.rewired_nets: list[Net] = []
+        
         # Assuming that the circuit initially has no collisions, get the gate coordinates to exclude from later collision checking
         self.gate_coordinates: list[tuple[int, int, int]] = []
         self.gate_coordinates = self.get_colliding_coordinates()
         
         self.shorten_longest_wire()
-        print(f'Nets with colliding coordinates: {self.get_nets_with_colliding_coordinates()}')
+        
+        for net in self.get_nets_with_colliding_coordinates():
+            # Clear wiring of nets with colliding coordinates
+            net.clear_wiring()
     
     
     def get_colliding_coordinates(self) -> list[tuple[int, int, int]]:
@@ -45,11 +51,13 @@ class HillClimber():
                 coordinate: tuple[int, int, int] = (wire.x, wire.y, wire.z)
                 
                 for colliding_coordinate in self.get_colliding_coordinates():
+                    # Check if a wire's coordinate is one of the known colliding coordinates
                     if coordinate == colliding_coordinate:
                         nets.add(net)
                         break
-    
-        return nets
+        
+        # Remove rewired nets from nets with colliding coordinates
+        return [net for net in nets if net not in self.rewired_nets]
     
     
     def shorten_longest_wire(self) -> None:
@@ -57,7 +65,7 @@ class HillClimber():
         nets = sorted(self.netlist, key=lambda net: len(net.wiring), reverse=True)
         
         for net in nets:
-            # Get first wire to match gates
+            # Get first wire to match gates in new wiring later
             first_wire = net.wiring[0]
             
             wiring_z = defaultdict(list)
@@ -71,6 +79,8 @@ class HillClimber():
             
             # Shorten wiring by retaining the largest wiring group
             net.wiring = wiring_z[max(wiring_z, key=lambda wire: wire)]
+            
+            self.rewired_nets.append(net)
             
             # Temporary: Stop after the first wire
             break

@@ -28,6 +28,10 @@ class Net():
         self.wiring.append(wire)
 
 
+    def clear_wiring(self) -> None:
+        self.wiring = []
+    
+    
     def direct_distance(self) -> int:
         """
         Get the direct distance between the gates.
