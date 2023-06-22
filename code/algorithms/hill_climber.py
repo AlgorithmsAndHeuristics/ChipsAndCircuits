@@ -1,5 +1,6 @@
 from circuit import Circuit
 from collections import defaultdict
+from net import Net
 from wire import Wire
 
 
@@ -13,12 +14,10 @@ class HillClimber():
         self.gate_coordinates = self.get_colliding_coordinates()
         
         self.shorten_longest_wire()
-        print(self.get_colliding_coordinates())
+        print(f'Nets with colliding coordinates: {self.get_nets_with_colliding_coordinates()}')
     
     
     def get_colliding_coordinates(self) -> list[tuple[int, int, int]]:
-        print('get_colliding_coordinates()')
-        
         # NOTE: Tracking wire objects will not work because they are never identical in Python even though their coordinates are
         coordinates: list[tuple[int, int, int]] = []
         colliding_coordinates: list[tuple[int, int, int]] = []
@@ -36,6 +35,22 @@ class HillClimber():
         
         # Remove gate coordinates from colliding coordinates
         return [coordinate for coordinate in colliding_coordinates if coordinate not in self.gate_coordinates]
+    
+    
+    def get_nets_with_colliding_coordinates(self) -> set[Net]:
+        nets: set[Net] = set()
+        
+        for netlist in self.circuit.netlists:
+            for net in netlist.nets.values():
+                for wire in net.wiring:
+                    coordinate: tuple[int, int, int] = (wire.x, wire.y, wire.z)
+                    
+                    for colliding_coordinate in self.get_colliding_coordinates():
+                        if coordinate == colliding_coordinate:
+                            nets.add(net)
+                            break
+    
+        return nets
     
     
     def shorten_longest_wire(self) -> None:
