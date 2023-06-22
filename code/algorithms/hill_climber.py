@@ -1,4 +1,5 @@
 from circuit import Circuit
+from collections import defaultdict
 
 
 class HillClimber():
@@ -9,8 +10,15 @@ class HillClimber():
             nets = sorted(netlist.nets2.values(), key=lambda net: len(net.wiring), reverse=True)
             
             for net in nets:
-                print(f'\nlen(net.wiring): {len(net.wiring)}')
+                wiring = defaultdict(list)
                 
                 for wire in net.wiring:
-                    print(f'Wire: {wire}')
+                    # Group wiring by Z-coordinate
+                    wiring[wire.z].append(wire)
+                
+                print(f'Wiring (z=0): {wiring[0]}')
+                print(f'Wiring (z=1): {wiring[1]}')
+                
+                # Temporary: Stop after the first wire
+                break
 
