@@ -11,10 +11,6 @@ LOOP:
 4. If intersection encountered, start again and move a plane down on first step
 5. If intersection encountered, start again and move two planes up on first step
 6. etc etc
-
-TODO:
-Line can't enter now when a line under/above on either
-start or end gate > endless loop
 """
 
 from code.classes.circuit import Circuit
@@ -32,7 +28,6 @@ def correct_line(circuit: Circuit, netlist_id: int, net_id: int) -> Circuit:
     POST: circuit of type Circuit
     """
 
-    direction: int = 1
     n_level: int = 1
 
     while True:
@@ -43,16 +38,12 @@ def correct_line(circuit: Circuit, netlist_id: int, net_id: int) -> Circuit:
             print("\nNO INTERSECTIONS")
             break
         
-        print(f"\nINTERSECTION, MOVING {n_level} LEVEL {direction}")
+        print(f"\nINTERSECTION, MOVING TO LEVEL {n_level}")
         # Move a level
-        circuit.move_level(netlist_id, net_id, direction, n_level)
+        circuit.move_level(netlist_id, net_id, n_level)
 
         # Go to next layer
-        if direction == 1:
-            direction = -1
-        else:
-            direction = 1
-            n_level += 1
+        n_level += 1
 
     return circuit
 
@@ -70,7 +61,6 @@ def make_nets(circuit: Circuit, netlist_id: int):
 
     # Get list of net id's in order of distance between the gates.
     sorted_nets = circuit.list_shortest_distance(netlist_id)
-    x = 0
     for net_id in sorted_nets:
         
         print(f"\nDOING: netlist_id={netlist_id} | net_id={net_id - 1}")
@@ -83,7 +73,18 @@ def make_nets(circuit: Circuit, netlist_id: int):
         # Lay the correct straight line
         circuit = correct_line(circuit, netlist_id, net_id)
 
-        x += 1
-        if x == 6:
-            break
+    # Connect all wires that remain unconnected to the gates
+    for net_id in sorted_nets:
+
+        print(f"\nCHECKING: netlist_id={netlist_id} | net_id={net_id - 1}")
+        # id of net in netlist is id in csv - 1 ... fix
+        net_id += 1
         
+        # Check if net is connected
+        if circuit.is_connected(netlist_id, net_id):
+            print(f"\nGATES ARE CONNECTED")
+            continue
+
+        print(f"\nCONNECTING GATES")
+        # Connect the gates to the line
+        circuit.connect_gates(netlist_id, net_id)

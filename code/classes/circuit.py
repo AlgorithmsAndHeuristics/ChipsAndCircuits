@@ -118,6 +118,138 @@ class Circuit():
             return True
 
         return False
+    
+
+    def connect_gates(self, netlist_id: int, net_id: int) -> None:
+        """
+        Connect the gates of requested net.
+
+        PRE: netlist_id and net_id of type int
+        POST: wiring of net is connected to it's gates
+        """
+
+        net: Net = self.get_net(netlist_id, net_id)
+        wiring: list[Wire] = net.wiring
+        gates: tuple[Gate, Gate] = net.gates
+
+        for i, gate in enumerate(gates):
+            
+            # Get wire to connect to
+            if i == 0:
+                wire_to_connect = wiring[1]
+            else:
+                wire_to_connect = wiring[-2]
+
+            # Get the available entrances to the gate
+            available_entrances = self.get_gate_entrances(gate)
+
+            # Get direction from gate to wire
+            dx = (wire_to_connect.x - gate.position[0])
+            if dx == 0:
+                dx = 0
+            else:
+                dx = dx / abs(dx)
+
+            dy = (wire_to_connect.y - gate.position[1])
+            if dy == 0:
+                dy = 0
+            else:
+                dy = dy / abs(dy)
+
+            direction = (dx, dy)
+
+            # Check if straight up is available if we need to go layer up
+            if (0, 0, 1) in available_entrances and wire_to_connect.z > 0:
+                entrance = (0, 0, 1)
+
+            # Choose one in same direction
+            elif (direction[0], 0, 0) in available_entrances:
+                entrance = (direction[0], 0, 0)
+            elif (0, direction[1], 0) in available_entrances:
+                entrance = (0, direction[1], 0)
+
+            # Otherwise choose first available one
+            else:
+                entrance = available_entrances[0]
+
+            # Make rest of wiring, first lay wire from entrance
+            connecting_wires: list[Wire] = []
+            first_wire = Wire(
+            gate.position[0] + entrance[0],
+            gate.position[1] + entrance[1],
+            0 + entrance[2]
+            )
+            
+            connecting_wires.append(first_wire)
+            
+            # Bring wire up to same level
+            if first_wire.z != wire_to_connect.z:
+                for level in range(first_wire.z + 1, wire_to_connect.z + 1):
+                    wire = Wire(
+                    first_wire.x,
+                    first_wire.y,
+                    level
+                    )
+                    connecting_wires.append(wire)
+
+            else:
+                wire = first_wire
+
+            # Make last wires from the last wire to wire_to_connect on same layer
+            for x in range(int(abs(wire.x - wire_to_connect.x))):
+                wire = Wire(int(wire.x + direction[0]), wire.y, wire.z)
+                connecting_wires.append(wire)
+
+            for y in range(int(abs(wire.y - wire_to_connect.y))):
+                wire = Wire(wire.x, int(wire.y + direction[1]), wire.z)
+                connecting_wires.append(wire)
+
+            # Place the wires in the wiring list depending on which gate
+            if i == 0:
+                for ins in range(0, len(connecting_wires)):
+                    wiring.insert(ins + 1, connecting_wires[ins])
+            else:
+               for ins in reversed(range(0, len(connecting_wires))):
+                    wiring.insert(len(wiring) - 1, connecting_wires[ins])
+            
+
+    def get_gate_entrances(self, gate: Gate) -> list[tuple[int, int, int]]:
+        """
+        Get the unused entrances of a gate. An entrance
+        is given in relative coordinates to that gate.
+
+        PRE: gate of type Gate
+        POST: list of entrances of type tuple[int, int, int]
+        """
+
+        possible_entrances: list[tuple[int, int, int]] = [
+            (0, 0, 1),
+            (1, 0, 0),
+            (0, 1, 0),
+            (-1, 0, 0),
+            (0, -1, 0)
+        ]
+        netlist: Netlist = self.netlists[0]
+        for net in netlist:
+
+            net_gates = net.gates
+            if gate in net_gates:
+
+                gate_position = (gate.position[0], gate.position[1], 0)
+
+                gate_index = net_gates.index(gate)
+                if gate_index == 0:
+                    wire = net.wiring[1]
+                else:
+                    wire = net.wiring[-2]
+
+                if self.wires_connected(Wire(gate_position[0], gate_position[1], gate_position[2]), wire):
+                    entrance = (wire.x - gate_position[0],
+                                wire.y - gate_position[1],
+                                wire.z - gate_position[2])
+                    possible_entrances.remove(entrance)
+        
+        return possible_entrances
 
 
     def get_gate_position(self, gate_id: int) -> tuple[int, int]:
@@ -176,6 +308,13 @@ class Circuit():
         
         # Check if the last Wire in a Net is the position of the end Gate
         if (net.wiring[-1].x, net.wiring[-1].y) == end_gate.position:
+
+            # Check if the wiring follows a consistent path
+            for i in range(0, len(net.wiring) - 1):
+                wire1, wire2 = net.wiring[i], net.wiring[i + 1]
+                if not self.wires_connected(wire1, wire2):
+                    return False
+  
             return True
 
         return False
@@ -247,7 +386,7 @@ class Circuit():
                 break
 
 
-    def move_level(self, netlist_id: int, net_id: int, direction: int, n_level: int) -> None:
+    def move_level(self, netlist_id: int, net_id: int, n_level: int) -> None:
         """
         Move the wire of requested net from netlist a level in asked direction.
         Depending on n_level it will move that amount of layers up or down.
@@ -264,17 +403,17 @@ class Circuit():
 
         # Move all wires except first and list to correct layer
         for wire in wiring[1:-1]:
-            wire.z = n_level * direction
+            wire.z = n_level
 
-        # Connect first wire to the rest of the wires
-        first_wire = wiring[0]
-        for level in range(1, n_level + 1):
-            wiring.insert(level, Wire(first_wire.x, first_wire.y, level * direction))
+        # # Connect first wire to the rest of the wires
+        # first_wire = wiring[0]
+        # for level in range(1, n_level + 1):
+        #     wiring.insert(level, Wire(first_wire.x, first_wire.y, level))
 
-        # Connect last wire to the rest of the wires
-        last_wire = wiring[-1]
-        for level in reversed(range(1, n_level + 1)):
-            wiring.insert(len(wiring) - 1, Wire(last_wire.x, last_wire.y, level * direction))
+        # # Connect last wire to the rest of the wires
+        # last_wire = wiring[-1]
+        # for level in reversed(range(1, n_level + 1)):
+        #     wiring.insert(len(wiring) - 1, Wire(last_wire.x, last_wire.y, level))
 
         # Update wiring of the net // NOTE it's needed?
         net.wiring = wiring
@@ -445,3 +584,29 @@ class Circuit():
         ax.zaxis.set_major_locator(MaxNLocator(integer=True, steps=[1]))
 
         plt.show()
+
+
+    def wires_connected(self, wire1: Wire, wire2: Wire) -> bool:
+        """
+        Check if two wires are connected
+
+        PRE: wire1 and wire2 of type Wire
+        POST: True if wires are connected, else False
+        """
+
+        if (
+            not 
+        (abs(wire1.x - wire2.x) == 1 and 
+            abs(wire1.y - wire2.y) == 0 and 
+            abs(wire1.z - wire2.z) == 0) and
+        not 
+        (abs(wire1.x - wire2.x) == 0 and 
+            abs(wire1.y - wire2.y) == 1 and 
+            abs(wire1.z - wire2.z) == 0) and
+        not 
+        (abs(wire1.x - wire2.x) == 0 and 
+            abs(wire1.y - wire2.y) == 0 and 
+            abs(wire1.z - wire2.z) == 1)
+        ):
+            return False
+        return True

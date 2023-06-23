@@ -10,10 +10,10 @@ from state_pruner import make_nets
 
 
 if __name__ == "__main__":
-    use_hill_climber: bool = True
+    use_hill_climber: bool = False
     
-    chip = 0
-    net =  1
+    chip = 1
+    net =  2
     net = (chip * 3) + net
     #NOTE PROBLEM OF CIRCUIT CLASS
     net_id = 1
