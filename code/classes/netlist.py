@@ -13,8 +13,11 @@ class Netlist():
 
         # Load the data from the csv
         df = pd.read_csv(netlist_path)
-        #self.nets: list[Net] = [Net(gates[net['chip_a']], gates[net['chip_b']]) for _, net in df.iterrows()]
-        self.nets2: dict[int, Net] = { i: Net(gates[net['chip_a']], gates[net['chip_b']]) for i, net in df.iterrows() }
+        self.nets: dict[int, Net] = { i: Net(gates[net['chip_a']], gates[net['chip_b']]) for i, net in df.iterrows() }
+    
+    
+    def __iter__(self):
+        return iter(self.nets.values())
     
     
     def check_intersection(self, net1: Net, net2: Net) -> bool:
@@ -38,8 +41,9 @@ class Netlist():
         """
 
         distance_list = []
-        for net_id in self.nets2:
-            net = self.nets2[net_id]
+        
+        for net_id in self.nets:
+            net = self.nets[net_id]
             distance = net.direct_distance()
             distance_list.append((net_id, distance))
 
@@ -59,14 +63,14 @@ class Netlist():
         the coordinates of the intersection"""
 
         intersections = set()
-        len_nets: int = len(self.nets2)
+        len_nets: int = len(self.nets)
 
         # Compare each net in the netlist
         for i in range(len_nets):
-            net1: Net = self.nets2[i]
+            net1: Net = self.nets[i]
             
             for j in range(i + 1, len_nets):
-                net2: Net = self.nets2[j]
+                net2: Net = self.nets[j]
 
                 # Check if the two Nets share a wire position
                 positions = [pos for pos in net1.get_wire_positions() if pos in net2.get_wire_positions()]
@@ -95,4 +99,4 @@ class Netlist():
         POST: Returns the current total amount of wires
         in net.wiring for all the nets in the netlist"""
 
-        return sum(len(net.wiring) for net in self.nets2.values())
+        return sum(len(net.wiring) for net in self.nets.values())

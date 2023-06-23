@@ -112,7 +112,7 @@ and the cost gets written to experiments/baseline_costs.txt.\n")
             circuit = Circuit(f"data/chip_{chip}/print_{chip}.csv")
             circuit.load_netlist(f"data/chip_{chip}/netlist_{netlist_id}.csv")
 
-            for net in circuit.netlists[0].nets2.values():
+            for net in circuit.netlists[0].nets.values():
                 make_manhattan_connection(net)
 
             circuit.plot_grid("Chip 0, Netlist 1")
