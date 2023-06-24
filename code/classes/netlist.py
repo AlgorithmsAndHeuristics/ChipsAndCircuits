@@ -97,6 +97,27 @@ class Netlist():
     def get_wire_count(self) -> int:
         """
         POST: Returns the current total amount of wires
-        in net.wiring for all the nets in the netlist"""
+        in net.wiring for all the nets in the netlist.
+        Includes wires on gates only once."""
 
-        return sum(len(net.wiring) for net in self.nets.values())
+        # Only include gate wires once
+        wired_gates = []
+        total_wires = []
+
+        # Loop through all the wires
+        for net in self.nets.values():
+            for wire in net.wiring:
+                position = (wire.x, wire.y, wire.z)
+
+                # Add the gates to wired_gates once
+                if position in [(gate.position[0], gate.position[1], 0) for gate in net.gates]:
+                    
+                    if position not in wired_gates:
+                        wired_gates.append(position)
+                
+                # Add the wire to total_wires if it's not on a gate
+                else:
+                    total_wires.append(position)
+
+        # Return the total wire count with the wires on gate positions included once
+        return len(total_wires) + len(wired_gates)

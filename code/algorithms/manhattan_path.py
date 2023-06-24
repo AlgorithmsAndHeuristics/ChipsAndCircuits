@@ -27,7 +27,7 @@ def make_manhattan_connection(net):
     if gate1.position[1] > gate2.position[1]:
         dy = gate1.position[1] - gate2.position[1]
         if dy > 0:
-            for i in range(dy + 1):
+            for i in range(dy):
                 net.add_wire(Wire(gate2.position[0], gate2.position[1] + i, 0))
     
     else:
