@@ -4,7 +4,7 @@ from code.classes.gate import Gate
 from code.classes.wire import Wire
 
 
-def make_manhattan_connection(net):
+def make_manhattan_connection(net: Net):
     gate1, gate2 = net.gates
 
     # Check which gate has a lower X value, start from there

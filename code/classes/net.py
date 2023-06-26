@@ -43,6 +43,10 @@ class Net():
         return sum(tuple(abs(i - j) for i, j in zip(gate_1.position, gate_2.position)))
         
 
+    def lay_wiring(self) -> None:
+        pass
+
+
     def get_wire_positions(self) -> list[set[int]]:
         """
         POST: Returns list of coördinate sets for all the wires in self.wiring"""

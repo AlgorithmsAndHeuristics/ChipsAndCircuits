@@ -94,6 +94,10 @@ class Netlist():
         return intersections
     
     
+    def get_net_id(self, net: Net) -> int:
+        return list(self.nets.keys())[list(self.nets.values()).index(net)]
+
+
     def get_wire_count(self) -> int:
         """
         POST: Returns the current total amount of wires
