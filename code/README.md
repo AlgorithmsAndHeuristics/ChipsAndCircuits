@@ -72,7 +72,7 @@ Een canvas met **Gate**s en **Netlist**s. Bevat de volgende variabelen:
 
 Bevat de volgende methode(s):
 * **self.any_intersections(self, netlist_id):** geeft een boolean die aangeeft of er wel of niet een intersection tussen de draden van Nets in de is;
-* * **self.check_position(self, x, y):** geeft een triple met booleans die respectievelijk aangeven of de positie met de gegeven coördinaten buiten de range van de grid is, een Gate bevat of een Wire bevat;
+* **self.check_position(self, x, y):** geeft een triple met booleans die respectievelijk aangeven of de positie met de gegeven coördinaten buiten de range van de grid is, een Gate bevat of een Wire bevat;
 * **self.check_position(self, position):** geeft een triple van booleans die respectievelijk aangeven of er op de gegeven positie een border, Gate of Wire aanwezig is;
 * **self.connect_gate(self, possible_pos, netlist_id, net_id):** voegt de laatste wire toe aan de wiring van een net;
 * **self.connect_gates(self, netlist_id, net_id):** verbindt de gates in een net met wire;
