@@ -1,3 +1,5 @@
 __pycache__/
 *.pyc
 desktop.ini
+code/.DS_Store
+test.py
