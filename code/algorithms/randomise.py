@@ -13,9 +13,9 @@ def make_wire(circuit: Circuit, netlist_id: int, net_id: int):
     Repeat until the gates are connected i.e.
     """
 
-    print("-"*15)
+    #print("-"*15)
     net = circuit.get_net(netlist_id, net_id)
-    print(f"\nDOING: Gate {net.gates[0]} to Gate {net.gates[1]}")
+    #print(f"\nDOING: Gate {net.gates[0]} to Gate {net.gates[1]}")
     #print(f">CIRCUIT NOW:\n\n{circuit}")
 
 
@@ -31,14 +31,14 @@ def make_wire(circuit: Circuit, netlist_id: int, net_id: int):
         return circuit
 
     random.shuffle(positions)
-    print(f">POSSIBLE POSITIONS: {positions}\n")
+    #print(f">POSSIBLE POSITIONS: {positions}\n")
 
     # Go off every position (if there are any) until connection is found
     for position in positions:
 
         
 
-        print(f">CHOSE: {position}\n")
+        #print(f">CHOSE: {position}\n")
 
         circuit.lay_wire(netlist_id, net_id, position)
 
@@ -59,7 +59,8 @@ def make_nets(circuit: Circuit, netlist_id: int):
     # Get requested netlist and make list of all net id's 
     # netlist_id - 1 CURRENTLY NOT ALWAYS CORRECT, 
     # netlist_id goes above 2, and only one netlist is always added anyways (see representation.py)
-    print("\n-------START-------")
+    
+    #print("\n-------START-------")
     netlist = circuit.netlists[0]
 
     # Create list of Net IDs from a Netlist
@@ -76,7 +77,7 @@ def make_nets(circuit: Circuit, netlist_id: int):
         # Get starting position based on Net (by ID) in a Netlist (by ID)
         starting_position: Position = circuit.get_net_start(netlist_id, net_id)
 
-        print(f"netlist_id={netlist_id} | net_id={net_id - 1} | start_pos={starting_position}")
+        #print(f"netlist_id={netlist_id} | net_id={net_id - 1} | start_pos={starting_position}")
 
         # place first coordinate (of gate, so shouldn't count as wire!) 
         # shouldn't already be done somewhere else?
@@ -86,4 +87,4 @@ def make_nets(circuit: Circuit, netlist_id: int):
         circuit = make_wire(circuit, netlist_id, net_id)
 
 
-        print("-------DONE-------\n")
+        #print("-------DONE-------\n")
