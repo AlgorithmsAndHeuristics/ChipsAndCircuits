@@ -130,6 +130,8 @@ and the cost gets written to experiments/baseline_costs.txt.\n")
     # Manhattan
     else: 
         # Time the run
+
+
         start_time_local = time.time()
 
         circuit = Circuit(f"data/chip_{chip}/print_{chip}.csv")

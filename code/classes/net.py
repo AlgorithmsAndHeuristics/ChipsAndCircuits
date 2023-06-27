@@ -26,6 +26,8 @@ class Net():
         """
         PRE: The x and y coordinates for a wire
         POST: Wire has been added to front of self.wiring"""
+        
+        self.state_counter += 1
 
         self.wiring.append(wire)
 

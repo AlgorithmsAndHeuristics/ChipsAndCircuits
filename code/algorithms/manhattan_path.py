@@ -15,8 +15,6 @@ def make_manhattan_connection(net: Net):
             for i in range(dx + 1):
                 net.add_wire(Wire(gate1.position[0] - i, gate1.position[1], 0))
 
-                # Increase the state counter for analysis
-                net.state_counter += 1
         
     else:
         dx = gate2.position[0] - gate1.position[0]
@@ -24,8 +22,6 @@ def make_manhattan_connection(net: Net):
             for i in range(dx + 1):
                 net.add_wire(Wire(gate1.position[0] + i, gate1.position[1], 0))
 
-                # Increase the state counter for analysis
-                net.state_counter += 1
 
     
     # Check which gate has a lower Y value, start from there
@@ -36,8 +32,6 @@ def make_manhattan_connection(net: Net):
             for i in range(dy):
                 net.add_wire(Wire(gate2.position[0], gate2.position[1] + i, 0))
                 
-                # Increase the state counter for analysis
-                net.state_counter += 1
     
     else:
         dy = gate2.position[1] - gate1.position[1]
@@ -45,5 +39,3 @@ def make_manhattan_connection(net: Net):
             for i in range(dy + 1):
                 net.add_wire(Wire(gate2.position[0], gate2.position[1] - i, 0))
 
-                # Increase the state counter for analysis
-                net.state_counter += 1

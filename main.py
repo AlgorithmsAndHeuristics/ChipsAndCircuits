@@ -11,37 +11,51 @@ from state_pruner import make_nets
 
 
 if __name__ == "__main__":
-    
-    start_time_local = time.time()
 
     use_hill_climber: bool = False
+    plot: bool = False
+    write: bool = True
     
     chip = 0
-    net =  1
-    net = (chip * 3) + net
+    netlist =  3
+    #net = (chip * 3) + net
     #NOTE PROBLEM OF CIRCUIT CLASS
     net_id = 1
+
+
+    for i in range(1200):
     
-    circuit = Circuit(f"data/chip_{chip}/print_{chip}.csv")
-
-
-    circuit.load_netlist(f"data/chip_{chip}/netlist_{net}.csv")
-
-    print(f"Netlist 1 has {len(circuit.netlists[0].nets)} nets")
-    print(f"A connection is required from gates:")
-
-    for net in circuit.netlists[0].nets.values():
-        print(f"Gate {net.gates[0]} to gate {net.gates[1]}")
-
-    make_nets(circuit, net_id)
-
-    if use_hill_climber:
-        hill_climber: HillClimber = HillClimber(circuit)
     
-    print(f"Configuration cost: {sum([netlist.get_cost() for netlist in circuit.netlists])}")
-    print(f"Plotting grid:")
+        start_time_local = time.time()
+        
+        circuit = Circuit(f"data/chip_{chip}/print_{chip}.csv")
 
-    circuit.plot_grid("Chip 0, Netlist 1")
+
+        circuit.load_netlist(f"data/chip_{chip}/netlist_{netlist}.csv")
+
+        #print(f"Netlist 1 has {len(circuit.netlists[0].nets)} nets")
+        #print(f"A connection is required from gates:")
+
+        for net in circuit.netlists[0].nets.values():
+            print(f"Gate {net.gates[0]} to gate {net.gates[1]}")
+
+        make_nets(circuit, net_id)
+
+        if use_hill_climber:
+            hill_climber: HillClimber = HillClimber(circuit)
+        
+        print(f"Configuration cost: {sum([netlist.get_cost() for netlist in circuit.netlists])}")
+        #print(f"Plotting grid:")
+
+        if plot:
+            circuit.plot_grid("Chip 0, Netlist 1")
+
+        if write: 
+            # Write the cost and excecution runtime to the file
+            with open('code/experiments/results/greedy_costs03.txt', "a") as file:
+                    cost = sum([netlist.get_cost() for netlist in circuit.netlists])
+                    visited_states = sum([net.state_counter for net in circuit.netlists[0].nets.values()])
+                    file.write(f'{cost},{time.time() - start_time_local},{visited_states}\n')
 
 
 print(f"Runtime: {time.time() - start_time_local}")
