@@ -82,16 +82,16 @@ and the cost gets written to experiments/baseline_costs.txt.\n")
             plot = False
             write = True
 
-            print("How many times would you like to run the algorithm? Please enter a positive, whole number.")
+            print("For how many seconds would you like to run algorithm? Please enter a positive, whole number.")
 
             # Prompt for test count
             while True:
-                run_count = int(input("> "))
+                total_time = int(input("> "))
 
-                if type(run_count == int):
+                if type(total_time == int):
                     break
         else:
-            run_count = 1
+            total_time = 60
             plot = True
             write = False
     else:
@@ -106,8 +106,9 @@ and the cost gets written to experiments/baseline_costs.txt.\n")
         
         start_time_global = time.time()
         
-        while time.time() - start_time_global < 3 * 60 * 60:
+        while time.time() - start_time_global < total_time:
             
+            # Time each run
             start_time_local = time.time()
 
             circuit = Circuit(f"data/chip_{chip}/print_{chip}.csv", border = 8)
@@ -118,22 +119,33 @@ and the cost gets written to experiments/baseline_costs.txt.\n")
                             netlist_id = netlist_id, plot = plot, write = write) == True:
                 
                 # Write the cost and excecution runtime to the file
-                with open('code/experiments/baseline_costs.txt', "a") as file:
+                with open('code/experiments/baseline_costs01.txt', "a") as file:
                         cost = sum([netlist.get_cost() for netlist in circuit.netlists])
-                        file.write(f'{cost},{time.time() - start_time_local}\n')
+                        visited_states = sum([net.state_counter for net in circuit.netlists[0].nets.values()])
+                        file.write(f'{cost},{time.time() - start_time_local},{visited_states}\n')
             
             # Wait 1 second for safety
             time.sleep(1)
 
     # Manhattan
     else: 
+        # Time the run
+        start_time_local = time.time()
+
         circuit = Circuit(f"data/chip_{chip}/print_{chip}.csv")
         circuit.load_netlist(f"data/chip_{chip}/netlist_{netlist_id}.csv")
 
         for net in circuit.netlists[0].nets.values():
             make_manhattan_connection(net)
 
-        circuit.plot_grid("Chip 0, Netlist 1")
+        print(f"Runtime: {time.time() - start_time_local}")
+        print(f"States visited: {sum([net.state_counter for net in circuit.netlists[0].nets.values()])}")
+        
+
+        print(circuit.netlists[0].get_intersections())
+
+
+        circuit.plot_grid(f"Chip {chip}, Netlist {netlist_id}")
 
 
 

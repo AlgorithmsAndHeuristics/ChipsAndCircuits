@@ -1,4 +1,5 @@
 import os, sys
+import time
 directory = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(directory, "code"))
 sys.path.append(os.path.join(directory, "code", "classes"))
@@ -10,7 +11,10 @@ from state_pruner import make_nets
 
 
 if __name__ == "__main__":
-    use_hill_climber: bool = True
+    
+    start_time_local = time.time()
+
+    use_hill_climber: bool = False
     
     chip = 0
     net =  1
@@ -38,3 +42,7 @@ if __name__ == "__main__":
     print(f"Plotting grid:")
 
     circuit.plot_grid("Chip 0, Netlist 1")
+
+
+print(f"Runtime: {time.time() - start_time_local}")
+print(f"States visited: {sum([net.state_counter for net in circuit.netlists[0].nets.values()])}")

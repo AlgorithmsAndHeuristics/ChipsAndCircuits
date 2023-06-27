@@ -11,6 +11,8 @@ class Net():
                 
         self.gates = (gate_a, gate_b)
         self.wiring: list[Wire] = []
+        
+        self.state_counter = 0
 
 
     def __repr__(self) -> str:

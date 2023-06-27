@@ -430,6 +430,9 @@ class Circuit():
         wire = Wire(position[0], position[1], 0)
         net: Net = self.get_net(netlist_id, net_id)
         net.add_wire(wire)
+
+        # Increase the state counter for analysis
+        net.state_counter += 1
     
 
     def list_shortest_distance(self, netlist_id: int) -> list[int]:

@@ -82,6 +82,7 @@ def make_nets(circuit: Circuit, netlist_id: int):
         # place first coordinate (of gate, so shouldn't count as wire!) 
         # shouldn't already be done somewhere else?
         circuit.lay_wire(netlist_id, net_id, starting_position)
+        
 
         # Make the wire connect to the last gate
         circuit = make_wire(circuit, netlist_id, net_id)
