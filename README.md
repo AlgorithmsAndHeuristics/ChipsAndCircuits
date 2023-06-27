@@ -18,7 +18,7 @@ Alle Python scripts staan in de folder **code**. In de map **data** zitten alle 
 
 ### Test (Testing)
 
-Om greedy en hillclimber te draaien, gebruik je:
+Om greedy te draaien, gebruik je:
 
 ```
 python main.py
