@@ -14,15 +14,23 @@ pip install -r requirements.txt
 
 ### Structuur (Structure)
 
-Alle Python scripts staan in de folder **code**. In de map **data** zitten alle input waardes en in de map **resultaten** worden alle resultaten opgeslagen door de code. In de map **images** staan de afbeeldingen voor de README bestanden.
+Alle Python scripts staan in de folder **code**. In de map **data** zitten alle input waardes en in de map **code/experiments** worden diverse resultaten van de code opgeslagen. In de map **images** staan de afbeeldingen voor de README bestanden.
 
 ### Test (Testing)
 
-Om de code te draaien met de standaardconfiguratie (momenteel een voorbeeld van de representatie, gebaseerd op netlist_1.csv en print_0.csv van chip_0) gebruik de instructie:
+Om greedy te draaien, gebruik je:
 
 ```
 python main.py
 ```
+
+Om random en manhattan path te draaien, gebruik je: 
+
+```
+python baseline.py
+```
+
+De resultaten van beide algoritmes zijn direct te zien in code/experiments/experiments.ipynb
 
 ## Auteurs (Authors)
 

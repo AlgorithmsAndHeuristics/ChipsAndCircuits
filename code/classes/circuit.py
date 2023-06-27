@@ -371,6 +371,7 @@ class Circuit():
         while True:
             wire = Wire(position[0], position[1], 0)
             net.add_wire(wire)
+            
 
             # If last added wire was not end_position, make new position
             if position != end_position:
@@ -677,7 +678,7 @@ class Circuit():
         # add the gates to the plot
         for gate in self.gates.values():
             x, y, z, label = gate.position[0], gate.position[1], 0, gate.id
-            ax.scatter(x, y, z, label=label, color="red")
+            ax.scatter(x, y, z, color="red")
             ax.text(x, y, z + 0.2, label, ha='center', va='bottom')
 
         plot_handles = []
@@ -695,10 +696,10 @@ class Circuit():
             plot_labels.append(f'Gate {net.gates[0].id} to {net.gates[1].id}')
 
         # Add the first legend
-        legend_1 = plt.legend(plot_handles, plot_labels, loc='upper right', bbox_to_anchor=(0, 1))
+        legend_1 = plt.legend(plot_handles, plot_labels, loc='upper right', bbox_to_anchor=(0, 1), ncol = 2)
         plt.gca().add_artist(legend_1)
 
-        # Make descriptive labels for the second legend
+        # Make descriptive labels and placeholder handles for the second legend
         plot_labels2 = []
         plot_labels2.append(f"Gate count: {len(self.gates)}")
         plot_labels2.append(f"Net count: {len(self.netlists[0].nets.values())}")
@@ -706,9 +707,10 @@ class Circuit():
         plot_labels2.append(f"Intersection count: {len(self.netlists[0].get_intersections())}")
         plot_labels2.append("")
         plot_labels2.append(f"Netlist cost: {self.netlists[0].get_cost()}")
+        plot_handles2 = [line for i in range(len(plot_labels2))]
 
         # Add the second legend
-        plt.legend(plot_labels2, loc='lower right', bbox_to_anchor=(1.4, 0.6), handlelength=0)
+        plt.legend(plot_handles2, plot_labels2, loc='lower right', bbox_to_anchor=(1.4, 0.6), handlelength=0)
 
         ax.set_xlabel('X')
         ax.set_ylabel('Y')

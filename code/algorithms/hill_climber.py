@@ -3,6 +3,7 @@ from collections import defaultdict
 from manhattan_path import make_manhattan_connection
 from net import Net
 from netlist import Netlist
+from state_pruner import correct_line, make_nets
 from wire import Wire
 
 
@@ -28,9 +29,7 @@ class HillClimber():
             net.clear_wiring()
             
             # Re-create wiring of nets with previously colliding coordinates
-            #make_manhattan_connection(net)
-            net_id: int = list(self.netlist.nets.keys())[list(self.netlist.nets.values()).index(net)]
-            circuit.lay_shortest_line(netlist_id, net_id)
+            net.lay_wiring()
     
     
     def get_colliding_coordinates(self) -> list[tuple[int, int, int]]:

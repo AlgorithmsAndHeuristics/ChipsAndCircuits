@@ -14,8 +14,8 @@ class Netlist():
         # Load the data from the csv
         df = pd.read_csv(netlist_path)
         self.nets: dict[int, Net] = { i: Net(gates[net['chip_a']], gates[net['chip_b']]) for i, net in df.iterrows() }
-    
-    
+        
+        
     def __iter__(self):
         return iter(self.nets.values())
     
@@ -104,6 +104,7 @@ class Netlist():
                     net2_gate1_position = (net2_gate1_position[0], net2_gate1_position[1], 0)
                     net2_gate2_position = net2.gates[1].position
                     net2_gate2_position = (net2_gate2_position[0], net2_gate2_position[1], 0)
+                    
                     # Don't add intersections on gates
                     for position in positions:
                         if position != net1_gate1_position and position != net1_gate2_position and\
@@ -113,9 +114,34 @@ class Netlist():
         return intersections
     
     
+    def get_net_id(self, net: Net) -> int:
+        return list(self.nets.keys())[list(self.nets.values()).index(net)]
+
+
     def get_wire_count(self) -> int:
         """
         POST: Returns the current total amount of wires
-        in net.wiring for all the nets in the netlist"""
+        in net.wiring for all the nets in the netlist.
+        Includes wires on gates only once."""
 
-        return sum(len(net.wiring) for net in self.nets.values())
+        # Only include gate wires once
+        wired_gates = []
+        total_wires = []
+
+        # Loop through all the wires
+        for net in self.nets.values():
+            for wire in net.wiring:
+                position = (wire.x, wire.y, wire.z)
+
+                # Add the gates to wired_gates once
+                if position in [(gate.position[0], gate.position[1], 0) for gate in net.gates]:
+                    
+                    if position not in wired_gates:
+                        wired_gates.append(position)
+                
+                # Add the wire to total_wires if it's not on a gate
+                else:
+                    total_wires.append(position)
+
+        # Return the total wire count with the wires on gate positions included once
+        return len(total_wires) + len(wired_gates)

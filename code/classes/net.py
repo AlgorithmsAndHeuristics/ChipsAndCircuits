@@ -11,6 +11,8 @@ class Net():
                 
         self.gates = (gate_a, gate_b)
         self.wiring: list[Wire] = []
+        
+        self.state_counter = 0
 
 
     def __repr__(self) -> str:
@@ -24,6 +26,8 @@ class Net():
         """
         PRE: The x and y coordinates for a wire
         POST: Wire has been added to front of self.wiring"""
+        
+        self.state_counter += 1
 
         self.wiring.append(wire)
 
@@ -42,6 +46,10 @@ class Net():
         gate_1, gate_2 = self.gates[0], self.gates[1]
         return sum(tuple(abs(i - j) for i, j in zip(gate_1.position, gate_2.position)))
         
+
+    def lay_wiring(self) -> None:
+        pass
+
 
     def get_wire_positions(self) -> list[set[int]]:
         """
