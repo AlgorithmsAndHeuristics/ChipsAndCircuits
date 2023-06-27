@@ -21,6 +21,7 @@ class Circuit():
 
         self.netlists: list[Netlist] = []
         self.gates: dict[int, Gate] = {}
+        self.gate_positions: set[tuple[int, int]] = set()
         self.border: int = border
 
         print_x = pd.read_csv(print_path)
@@ -28,9 +29,10 @@ class Circuit():
         # Read the gates from the print_x file
         for index, gate in print_x.iterrows():
             self.gates[int(gate[0])] = (Gate(int(gate[0]), (int(gate[1]), int(gate[2]))))
+            self.gate_positions.add((gate[1], gate[2]))
 
 
-    def any_intersections(self, netlist_id: int) -> bool:
+    def any_intersections(self, netlist_id: int, net_id: int = None) -> bool:
         """
         Check if there are any intersections.
 
@@ -38,6 +40,21 @@ class Circuit():
         POST: returns False if there aren't any intersections,
         else True
         """
+
+        # Check if this net is overlapping any gates
+        if net_id != None:
+            net: Net = self.get_net(netlist_id, net_id)
+            wiring: list[Wire] = net.wiring
+            check_set = self.gate_positions
+
+            # Remove own gate positions of net
+            for gate in net.gates:
+                check_set = check_set.discard(gate.position)
+
+            for wire in wiring:
+                # If a wire is on a gate it's an intersection, thus return True
+                if (wire.x, wire.y) in check_set:
+                    return True
 
         netlist = self.netlists[netlist_id  - 1]
         
@@ -196,7 +213,7 @@ class Circuit():
                 wire = first_wire
 
             # Make last wires from the last wire to wire_to_connect on same layer
-            for x in range(int(abs(wire.x - wire_to_connect.x))):
+            for x in range(int(abs(wire.x - wire_to_connect.x) - 1)):
                 wire = Wire(int(wire.x + direction[0]), wire.y, wire.z)
                 connecting_wires.append(wire)
 
@@ -386,6 +403,21 @@ class Circuit():
                 break
 
 
+    def load_gate_positions(self) -> None:
+        """
+        Load all the gate positions into a set.
+
+        POST: self.gate_positions contains all the gate positions
+        of type tuple[int, int]
+        """
+
+        netlist: Netlist = self.netlists[0]
+        for net_id in netlist.nets:
+            net: Net = netlist.nets[net_id]
+            for gate in net.gates:
+                self.gate_positions.add(gate.position)
+
+
     def move_level(self, netlist_id: int, net_id: int, n_level: int) -> None:
         """
         Move the wire of requested net from netlist a level in asked direction.
@@ -427,10 +459,62 @@ class Circuit():
         POST: wire of type Wire is added to self.netlists[netlist_id][net_id - 1]
         """
 
-        wire = Wire(position[0], position[1], 0)
+        # Fix for z coordinate given
+        if len(position) == 3:
+            wire = Wire(position[0], position[1], position[2])
+        else:
+            wire = Wire(position[0], position[1])
+
         net: Net = self.get_net(netlist_id, net_id)
         net.add_wire(wire)
+
+        
+    def lay_from_gate(self, netlist_id: int, net_id: int, position: Position, position_index: int = None) -> None:
+        """
+        Lay wire on requested net from netlist. If a position index is given,
+        that means we have to insert from gate one after 'position_index' wires.
+
+        PRE: netlist_id, net_id and gate_index of type int, and position of type Position
+        POST: wire of type Wire is added to self.netlists[netlist_id][net_id - 1]
+        """
     
+        # Fix for z coordinate given
+        if len(position) == 3:
+            wire = Wire(position[0], position[1], position[2])
+        else:
+            wire = Wire(position[0], position[1])
+
+        net: Net = self.get_net(netlist_id, net_id)
+        wiring: list[Wire] = net.wiring
+
+        # If from the first gate
+        if position_index:
+            wiring.insert(position_index, wire)
+
+        else:
+            # Insert the wire to add
+            wiring.insert(len(wiring) - 1, wire)
+
+        # Save new wiring
+        net.wiring = wiring
+
+    def undo_lay_from_gate(self, netlist_id: int, net_id: int, position_index: int = None) -> None:
+
+        net: Net = self.get_net(netlist_id, net_id)
+        wiring: list[Wire] = net.wiring
+
+        # If from the first gate
+        if position_index:
+            print(f"\nUNDO LAY {(wiring[position_index].x, wiring[position_index].y, wiring[position_index].z)}")
+            del wiring[position_index]
+
+        # Delete last added wire
+        else:
+            print(f"\nUNDO LAY {(wiring[-2].x, wiring[-2].y, wiring[-2].z)}")
+            del wiring[-2]
+
+        # Save new wiring
+        net.wiring = wiring
 
     def list_shortest_distance(self, netlist_id: int) -> list[int]:
         """
@@ -445,6 +529,60 @@ class Circuit():
         # sort on the second value i.e. distance of the distances list,
         # and put only the net_id in the list.
         return [i for i, j in sorted(distances, key=lambda x: x[1])]
+
+
+    def most_connected_nets(self, netlist_id: int) -> list[int]:
+        """
+        Sort the netlist on most connected gates.
+
+        PRE: netlist_id of type int
+        POST: list with integers representing net_id's
+        """
+
+        netlist = self.netlists[netlist_id - 1]
+        nets: dict[int, Net] = netlist.nets
+        connections = netlist.gate_connections()
+
+        # Sort the gates on n connections
+        gates = [i for i, j in sorted(connections.items(), key=lambda x: x[1], reverse=True)]
+
+        sorted_nets: list[Net] = []
+        for gate in gates:
+            for net_id in nets:
+                if nets[net_id].gates[0].id == gate:
+                    sorted_nets.append(net_id)
+
+        return sorted_nets
+                    
+
+
+    def most_connected_gates(self, netlist_id: int) -> list[list[tuple[int, int]]]:
+        """
+        Sort gate id on amount of connections, starting from most.
+
+        PRE: netlist_id of type int
+        POST: list[gate_id] where gate_id is of type int
+        """
+
+        netlist = self.netlists[netlist_id - 1]
+        connections = netlist.gate_connections()
+
+        # Sort the gates on n connections
+        gates = [i for i, j in sorted(connections.items(), key=lambda x: x[1], reverse=True)]
+
+        # Get net_id's for every gate
+        sorted_gate_nets = []
+        for gate_id in gates:
+            nets = []
+            for net_id in netlist.nets:
+                gates = netlist.nets[net_id].gates
+                gates = (gates[0].id, gates[1].id)
+                if gate_id in gates:
+                    index_gate_net = gates.index(gate_id)
+                    nets.append((net_id, index_gate_net))
+            sorted_gate_nets.append(nets)
+
+        return sorted_gate_nets
 
     
     def load_netlist(self, path: str) -> None:

@@ -32,7 +32,7 @@ class Netlist():
         return False
     
     
-    def direct_distances(self) -> int:
+    def direct_distances(self) -> tuple[int, int]:
         """
         Get all the direct distances of the nets.
 
@@ -48,6 +48,25 @@ class Netlist():
             distance_list.append((net_id, distance))
 
         return distance_list
+    
+
+    def gate_connections(self) -> dict[int, int]:
+        """
+        Get amount of connections of all gates in the netlist.
+
+        POST: returns a list of tuples of type dict[int, int]:
+        {gate_id: n_connections}
+        """
+
+        connection_dict = {}
+        for net_id in self.nets:
+            net: Net = self.nets[net_id]
+            for gate in net.gates:
+                n_connections = connection_dict.get(gate.id, 0)
+                n_connections += 1
+                connection_dict[gate.id] = n_connections
+
+        return connection_dict
 
 
     def get_cost(self) -> int:
