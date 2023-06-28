@@ -108,10 +108,10 @@ random.py bevat de volgende functies:
 Bevat de code voor ons tweede baseline algoritme: **Manhattan path**. Dit algoritme legt een manhattan path aan wire tussen de gates van de nets in een netlist. (Werk van Matyas)
 
 ## greedy.py
-Bevat het originele greedy algoritme: **Greedy**. Legt manhattan paths van de langste naar de kortste nets en gaat een laag omhoog als er een obstakel gevonden is. Verbindt vervolgens de gates aan het pad afhankelijk van welke ingangen van de gate nog beschikaar zijn. (Werk van Lindel)
+Bevat het originele greedy algoritme: **Greedy**. Legt manhattan paths in volgorde van de langste naar de kortste nets, als er een obstakel gevonden is gaat een laag omhoog en laat hij de connectie met de twee gates achter. Als dit voor alle nets gedaan is connect hij elke gate apart aan de nets in volgorde van gates met de meeste connecties.   (Werk van Lindel)
 
 ## randomised_greedy.py
-Bevat het tweede Greedy algoritme: **Randomised greedy**. (beschrijving) (Werk van Lindel)
+Bevat het tweede Greedy algoritme: **Randomised greedy**. In volgorde van nets die de meeste connecties bij de 1e gate hebben, wordt een pad afgelegd naar de gates, waar voor elke stap eerst de richting in manhattan distance wordt gekozen, als die niet mogelijk zijn elk andere mogelijke richting. (Werk van Lindel)
 
 ## hill_climber.py
 Bevat het **hillclimber** algorite. (beschrijving) (Werk van Joey)
