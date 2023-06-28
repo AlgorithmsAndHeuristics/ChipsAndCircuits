@@ -49,7 +49,7 @@ class Circuit():
 
             # Remove own gate positions of net
             for gate in net.gates:
-                check_set = check_set.discard(gate.position)
+                check_set.discard(gate.position)
 
             for wire in wiring:
                 # If a wire is on a gate it's an intersection, thus return True

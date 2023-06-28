@@ -66,7 +66,7 @@ def lay_manhattan(circuit: Circuit, netlist_id: int, net_id: int, runTime: int, 
             # in case of starting at gate, that position is also invalid
             # Also make sure to not go z < 0
             # Also check if new position isn't already passed
-            if (circuit.any_intersections(netlist_id) or
+            if (circuit.any_intersections(netlist_id, net_id) or
                 new_start_position[2] < 0 or
                 new_start_position in passed_coordinates or
                 len(passed_coordinates) + 1 >= max_length
@@ -134,7 +134,7 @@ def lay_manhattan(circuit: Circuit, netlist_id: int, net_id: int, runTime: int, 
                 # Check for intersections, if any undo lay and return None
                 # in case of starting at gate, that position is also invalid
                 # Also make sure to not go z < 0
-                if (circuit.any_intersections(netlist_id) or
+                if (circuit.any_intersections(netlist_id, net_id) or
                     new_start_position[2] < 0 or
                     new_start_position in passed_coordinates or
                     len(passed_coordinates) + 1 >= max_length
