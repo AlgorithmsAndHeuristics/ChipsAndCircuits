@@ -2,3 +2,5 @@ pandas
 random
 math
 matplotlib
+time
+seaborn
