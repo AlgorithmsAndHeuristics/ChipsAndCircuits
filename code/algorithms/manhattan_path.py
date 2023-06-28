@@ -1,10 +1,23 @@
-from code.classes.circuit import Circuit
-from code.classes.net import Net
-from code.classes.gate import Gate
-from code.classes.wire import Wire
+import os
+import sys
+
+directory = os.path.dirname(os.path.realpath(__file__))
+parent_directory = os.path.dirname(directory)
+sys.path.append(os.path.join(parent_directory, "classes"))
+
+from circuit import Circuit
+from net import Net
+from gate import Gate
+from wire import Wire
 
 
 def make_manhattan_connection(net: Net):
+    """
+    PRE: A net object.
+    POST: Both gates in the net have been connected with a
+    manhattan line of wire.
+    """
+
     gate1, gate2 = net.gates
 
     # Check which gate has a lower X value, start from there
