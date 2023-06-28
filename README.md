@@ -15,6 +15,7 @@ pip install -r requirements.txt
 ### Structuur (Structure)
 
 Alle Python scripts staan in de folder **code**. In de map **data** zitten alle input waardes en in de map **code/experiments** worden diverse resultaten van de code opgeslagen. In de map **images** staan de afbeeldingen voor de README bestanden.
+Het bestand baseline.py bevat twee baseline algoritmes: random path en manhattan path. Het wordt wegens de zeer lange runtimes afgeraden random path op grotere chips dan chip 0 te runnen. Voor deze chips wordt manhattan path als baseline gebruikt.
 
 ### Test (Testing)
 
@@ -24,13 +25,14 @@ Om greedy te draaien, gebruik je:
 python main.py
 ```
 
-Om random en manhattan path te draaien, gebruik je: 
+Om random path en manhattan path te draaien, gebruik je: 
 
 ```
 python baseline.py
 ```
+Na het runnen van main.py of baseline.py wordt je door diverse tekst prompts door de run opties genavigeerd.  
 
-De resultaten van beide algoritmes zijn direct te zien in code/experiments/experiments.ipynb
+Onze resultaten van beide algoritmes zijn te zien in code/experiments/experiments.ipynb
 
 ## Auteurs (Authors)
 
