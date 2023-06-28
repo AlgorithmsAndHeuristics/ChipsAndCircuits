@@ -136,6 +136,7 @@ def lay_manhattan(circuit: Circuit, netlist_id: int, net_id: int, runTime: int, 
                 # Also make sure to not go z < 0
                 if (circuit.any_intersections(netlist_id) or
                     new_start_position[2] < 0 or
+                    new_start_position in passed_coordinates or
                     len(passed_coordinates) + 1 >= max_length
                     ):
                     print(f"\nINTERSECTION: {new_start_position}")
