@@ -20,13 +20,17 @@ start with the gates that have to connect to the most nets
 >> Assumption: most connected gates will have most conflicts
 """
 
-import random
+import random, sys, os
 from typing import Optional
 
-from code.classes.circuit import Circuit
-from code.classes.net import Net
-from code.classes.gate import Gate
-from code.classes.wire import Wire
+directory = os.path.dirname(os.path.realpath(__file__))
+parent_directory = os.path.dirname(directory)
+sys.path.append(os.path.join(parent_directory, "classes"))
+
+from circuit import Circuit
+from net import Net
+from gate import Gate
+from wire import Wire
 
 Position = tuple[int, int, int]
 
@@ -42,7 +46,7 @@ def lay_shortest_line(circuit: Circuit, netlist_id: int, net_id: int):
     connected with the shortest line
     """
 
-    net: Net = circuit.get_net(netlist_id, net_id)
+    net: Net = circuit.get_net(net_id)
     gates: tuple[Gate, Gate] = net.gates
     position = gates[0].position
     end_position = gates[1].position
@@ -114,7 +118,7 @@ def layer_line(circuit: Circuit, netlist_id: int, net_id: int) -> Circuit:
     n_level: int = 1
 
     while True:
-        print(f"NET: {circuit.get_net(netlist_id, net_id)}")
+        print(f"NET: {circuit.get_net(net_id)}")
 
         # Check if no intersections
         if not circuit.any_intersections(netlist_id):
@@ -206,7 +210,7 @@ def intitial_lines(circuit: Circuit, netlist_id: int, sorted_nets: list[int]) ->
         
         print(f"\nDOING: netlist_id={netlist_id} | net_id={net_id + 1}")
         net_id += 1
-        net: Net = circuit.get_net(netlist_id, net_id)
+        net: Net = circuit.get_net(net_id)
         
         # Get initial positions
         start_position = net.gates[0].position
@@ -340,7 +344,7 @@ def connect_all_gates(circuit: Circuit, netlist_id: int, sorted_nets: list[int])
             
             print(f"\nGATE CHECKING: net_id={net_id + 1} | gate_index{index_gate_net}")
             net_id += 1
-            net: Net = circuit.get_net(netlist_id, net_id)
+            net: Net = circuit.get_net(net_id)
 
             # Check if already connected
             if circuit.is_connected(netlist_id, net_id):
@@ -418,7 +422,7 @@ def connect_all_gates(circuit: Circuit, netlist_id: int, sorted_nets: list[int])
     return circuit
 
 
-def make_nets(circuit: Circuit, netlist_id: int):
+def greedy_make_nets(circuit: Circuit, netlist_id: int):
     """
     Go off all nets in netlist in order of distance between it's gates,
     make a straight line, and correct the line if necessary.

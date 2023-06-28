@@ -21,7 +21,7 @@ def make_wire(circuit: Circuit, netlist_id: int, net_id: int):
     """
 
     #print("-"*15)
-    net = circuit.get_net(netlist_id, net_id)
+    net = circuit.get_net(net_id)
     #print(f"\nDOING: Gate {net.gates[0]} to Gate {net.gates[1]}")
     #print(f">CIRCUIT NOW:\n\n{circuit}")
 

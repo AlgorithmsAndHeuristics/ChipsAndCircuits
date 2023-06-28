@@ -124,14 +124,16 @@ and the cost gets written to experiments/main_costs.txt.\n")
         circuit = Circuit(f"data/chip_{chip}/print_{chip}.csv")
         circuit.load_netlist(f"data/chip_{chip}/netlist_{netlist}.csv")
 
+        print(chosen_algorithm)
         # Run the greedy algorithm
-        if not chosen_algorithm == 0:
+        if chosen_algorithm == 0:
+            print("AAA")
             greedy_make_nets(circuit, net_id)
             succesful_circuit = True
 
         # Run the random greedy algorithm
         else:
-            succesful_circuit = random_greedy_make_nets(circuit, net_id, 60)         
+            succesful_circuit = random_greedy_make_nets(circuit, net_id)         
 
         # Only return relevant data if the algorithm found a solution
         if not succesful_circuit:

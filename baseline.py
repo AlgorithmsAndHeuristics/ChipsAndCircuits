@@ -26,7 +26,7 @@ def make_net_timed(circuit, chip_id, netlist_id, plot: bool = False):
 
     if plot:
         print(f"Plotting grid:")
-        return circuit.plot_grid("Chip {chip}, Netlist {netlist_id}")
+        return circuit.plot_grid(f"Chip {chip}, Netlist {netlist_id}")
 
     else:
         return True
@@ -128,7 +128,7 @@ and the cost gets written to experiments/baseline_costs.txt.\n")
 
             # Write the data to the file if the netlist was completed within the given time
             if make_net_timed(timeout = 60, circuit = circuit, chip_id = chip, 
-                            netlist_id = netlist_id, plot = plot, write = write) == True:
+                            netlist_id = netlist_id, plot = plot) == True:
                 
                 # Write the cost and excecution runtime to the file
                 with open('code/experiments/baseline_costs01.txt', "a") as file:
@@ -136,6 +136,8 @@ and the cost gets written to experiments/baseline_costs.txt.\n")
                         visited_states = sum([net.state_counter for net in circuit.netlists[0].nets.values()])
                         file.write(f'{cost},{time.time() - start_time_local},{visited_states}\n')
             
+            if chosen_mode == 0:
+                 break
             # Wait 1 second for safety
             time.sleep(1)
 

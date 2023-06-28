@@ -8,7 +8,7 @@ class Wire():
         return self.x == other.x and self.y == other.y and self.z == other.z
 
 
-    def __init__(self, x: int, y: int, z: int):
+    def __init__(self, x: int, y: int, z: int = 0):
         """
         PRE: x, y and z coördinates.
         POST: initializes a Wire object.

@@ -41,7 +41,7 @@ class Circuit():
 
         # Check if this net is overlapping any gates
         if net_id != None:
-            net: Net = self.get_net(netlist_id, net_id)
+            net: Net = self.get_net(net_id)
             wiring: list[Wire] = net.wiring
             check_set = self.gate_positions
 
@@ -76,7 +76,7 @@ class Circuit():
         bool_set = []
         
         # Check if position isn't already used by Wire in Net
-        net = self.get_net(netlist_id, net_id)
+        net = self.get_net(net_id)
         wires = net.wiring
         wire_bool = False
 
@@ -97,7 +97,7 @@ class Circuit():
         # Check if position contains a Gate
 
         # NOTE: END GATE AS POSITION SHOULD RETURN FALSE:
-        net: Net = self.get_net(netlist_id, net_id)
+        net: Net = self.get_net(net_id)
         end_gate: Gate = net.gates[-1]
         end_position = end_gate.position
 
@@ -127,7 +127,7 @@ class Circuit():
         and return True, else False
         """
 
-        net: Net = self.get_net(netlist_id, net_id)
+        net: Net = self.get_net(net_id)
         end_gate: Gate = net.gates[-1]
         end_position = end_gate.position
 
@@ -220,7 +220,7 @@ class Circuit():
         """
 
         # Get Net (by ID) in Netlist (by ID) to use as starting point
-        net: Net = self.get_net(netlist_id, net_id)
+        net: Net = self.get_net(net_id)
         
         gate: Gate = net.gates[0]
         return gate.position
@@ -237,7 +237,7 @@ class Circuit():
         POST: True or False
         """
         
-        net: Net = self.get_net(netlist_id, net_id)
+        net: Net = self.get_net(net_id)
 
         # Get end Gate of a Wire from a Net
         end_gate: Gate = self.gates[net.gates[1].id]
@@ -280,7 +280,7 @@ class Circuit():
         is moved n_level layers
         """
 
-        net: Net = self.get_net(netlist_id, net_id)
+        net: Net = self.get_net(net_id)
         wiring: list[Wire] = net.wiring
 
         # Move all wires except first and list to correct layer
@@ -304,7 +304,7 @@ class Circuit():
         else:
             wire = Wire(position[0], position[1])
 
-        net: Net = self.get_net(netlist_id, net_id)
+        net: Net = self.get_net(net_id)
         net.add_wire(wire)
 
         
@@ -323,7 +323,7 @@ class Circuit():
         else:
             wire = Wire(position[0], position[1])
 
-        net: Net = self.get_net(netlist_id, net_id)
+        net: Net = self.get_net(net_id)
         wiring: list[Wire] = net.wiring
 
         # If from the first gate
@@ -339,7 +339,7 @@ class Circuit():
 
     def undo_lay_from_gate(self, netlist_id: int, net_id: int, position_index: int = None) -> None:
 
-        net: Net = self.get_net(netlist_id, net_id)
+        net: Net = self.get_net(net_id)
         wiring: list[Wire] = net.wiring
 
         # If from the first gate
@@ -439,7 +439,7 @@ class Circuit():
         POST: list with coordinates of type tuple[int, int]
         """
 
-        net: Net = self.get_net(netlist_id, net_id)
+        net: Net = self.get_net(net_id)
 
         # Get last Wire that was laid down
         last_wire: Wire = net.wiring[-1]
@@ -471,7 +471,7 @@ class Circuit():
         POST: wire is removed from self.netlists[netlist_id][net_id - 1]
         """
 
-        net: Net = self.get_net(netlist_id, net_id)
+        net: Net = self.get_net(net_id)
         net.unadd_wire()
 
 

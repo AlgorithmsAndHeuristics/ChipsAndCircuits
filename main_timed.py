@@ -6,7 +6,7 @@ sys.path.append(os.path.join(directory, "code", "algorithms"))
 
 from circuit import Circuit
 #from hill_climber import HillClimber
-from greedy import make_nets
+from greedy import greedy_make_nets
 
 
 if __name__ == "__main__":
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     for net in circuit.netlists[0].nets.values():
         print(f"Gate {net.gates[0]} to gate {net.gates[1]}")
 
-    circuit = make_nets(circuit, net_id, runTime)
+    circuit = greedy_make_nets(circuit, net_id)
 
     print(f"Configuration cost: {sum([netlist.get_cost() for netlist in circuit.netlists])}")
     print(f"Plotting grid:")

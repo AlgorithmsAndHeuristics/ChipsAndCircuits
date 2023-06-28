@@ -214,7 +214,7 @@ def random_greedy_make_nets(circuit: Circuit, netlist_id: int):
         # print(f"\nDOING: net_id={net_id}")
         
         # Get start and end position
-        gates = circuit.get_net(netlist_id, net_id).gates
+        gates = circuit.get_net(net_id).gates
         start_position = (gates[0].position[0], gates[0].position[1], 0)
         end_position = (gates[1].position[0], gates[1].position[1], 0)
 
