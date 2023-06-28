@@ -15,7 +15,7 @@ def lay_manhattan(circuit: Circuit, netlist_id: int, net_id: int, runTime: int, 
     the manhattan directions are not possible, try all other possible directions.
     """
     
-    print(f"\n-----------------------------------------------------------TO RECURSION = {recurs_count}")
+    # print(f"\n-----------------------------------------------------------TO RECURSION = {recurs_count}")
     # Get manhattan directions and distances, order is x to y to z
     man_directions, man_distances = [], []
     for i in range(3):
@@ -44,10 +44,10 @@ def lay_manhattan(circuit: Circuit, netlist_id: int, net_id: int, runTime: int, 
     random.shuffle(xy_priority)
     priority_order = xy_priority + [2]
 
-    print(f"MSTART = {start_position}")
+    # print(f"MSTART = {start_position}")
     # Go off priorities for manhattan distance directions
     for priority in priority_order:
-        print(f"MAN TRYING {priority} FROM dis = {man_distances} / dir = {man_directions}")
+        # print(f"MAN TRYING {priority} FROM dis = {man_distances} / dir = {man_directions}")
         # If distance in this direction is not zero
         if man_distances[priority] != 0:
             new_start_position = list(start_position)
@@ -57,7 +57,7 @@ def lay_manhattan(circuit: Circuit, netlist_id: int, net_id: int, runTime: int, 
             # Check if the new position is the end position, if so return the circuit
             # this way it doesn't get added
             if new_start_position == end_position:
-                print("\nSTART=END")
+                # print("\nSTART=END")
                 return circuit
             
             circuit.lay_wire(netlist_id, net_id, new_start_position)
@@ -71,7 +71,7 @@ def lay_manhattan(circuit: Circuit, netlist_id: int, net_id: int, runTime: int, 
                 new_start_position in passed_coordinates or
                 len(passed_coordinates) + 1 >= max_length
                 ):
-                print(f"\nINTERSECTION: {new_start_position}")
+                # print(f"\nINTERSECTION: {new_start_position}")
                 circuit.undo_lay(netlist_id, net_id)
                 continue
 
@@ -81,7 +81,7 @@ def lay_manhattan(circuit: Circuit, netlist_id: int, net_id: int, runTime: int, 
                 border = borders[i]
                 for limit in border:
                     if new_start_position[i] == limit:
-                        print(f"\nBORDER REACHED: {new_start_position}")
+                        # print(f"\nBORDER REACHED: {new_start_position}")
                         circuit.undo_lay(netlist_id, net_id)
                         reached_border = True
                         break
@@ -96,12 +96,12 @@ def lay_manhattan(circuit: Circuit, netlist_id: int, net_id: int, runTime: int, 
                 passed_coordinates.append(new_start_position)
 
                 if lay_manhattan(circuit, netlist_id, net_id, runTime, new_start_position, end_position, passed_coordinates, borders, max_length, recurs_count + 1, count_non_man, max_non_man):
-                    print(f"\n-----------------------------------------------------------BACK TO RECURSION = {recurs_count}")
+                    # print(f"\n-----------------------------------------------------------BACK TO RECURSION = {recurs_count}")
                     return circuit
                     
                 # If recursion didn't work undo this lay
                 else:
-                    print(f"\nRECURSION DIDN'T WORK")
+                    # print(f"\nRECURSION DIDN'T WORK")
                     circuit.undo_lay(netlist_id, net_id)
 
                     # Remove coordinate
@@ -113,10 +113,10 @@ def lay_manhattan(circuit: Circuit, netlist_id: int, net_id: int, runTime: int, 
         random.shuffle(xy_priority)
         priority_order =  [2] + xy_priority
 
-        print(f"OSTART = {start_position}")
+        # print(f"OSTART = {start_position}")
         # Try again but not manhattan direction
         for priority in priority_order:
-            print(f"OTHER TRYING {priority} FROM dis = {other_directions}")
+            # print(f"OTHER TRYING {priority} FROM dis = {other_directions}")
             # If distance in this direction is not zero
             for direction in other_directions[priority]:
                 new_start_position = list(start_position)
@@ -126,7 +126,7 @@ def lay_manhattan(circuit: Circuit, netlist_id: int, net_id: int, runTime: int, 
                 # Check if the new position is the end position, if so return the circuit
                 # this way it doesn't get added
                 if new_start_position == end_position:
-                    print("\nSTART=END")
+                    # print("\nSTART=END")
                     return circuit
                 
                 circuit.lay_wire(netlist_id, net_id, new_start_position)
@@ -139,7 +139,7 @@ def lay_manhattan(circuit: Circuit, netlist_id: int, net_id: int, runTime: int, 
                     new_start_position in passed_coordinates or
                     len(passed_coordinates) + 1 >= max_length
                     ):
-                    print(f"\nINTERSECTION: {new_start_position}")
+                    # print(f"\nINTERSECTION: {new_start_position}")
                     circuit.undo_lay(netlist_id, net_id)
                     continue
 
@@ -149,7 +149,7 @@ def lay_manhattan(circuit: Circuit, netlist_id: int, net_id: int, runTime: int, 
                     border = borders[i]
                     for limit in border:
                         if new_start_position[i] == limit:
-                            print(f"\nBORDER REACHED: {new_start_position}")
+                            # print(f"\nBORDER REACHED: {new_start_position}")
                             circuit.undo_lay(netlist_id, net_id)
                             reached_border = True
                             break
@@ -164,12 +164,12 @@ def lay_manhattan(circuit: Circuit, netlist_id: int, net_id: int, runTime: int, 
                     passed_coordinates.append(new_start_position)
 
                     if lay_manhattan(circuit, netlist_id, net_id, runTime, new_start_position, end_position, passed_coordinates, borders, max_length, recurs_count + 1, count_non_man + 1, max_non_man):
-                        print(f"\n-----------------------------------------------------------BACK TO RECURSION = {recurs_count}")
+                        # print(f"\n-----------------------------------------------------------BACK TO RECURSION = {recurs_count}")
                         return circuit
                         
                     # If recursion didn't work undo this lay
                     else:
-                        print(f"\nRECURSION DIDN'T WORK")
+                        # print(f"\nRECURSION DIDN'T WORK")
                         circuit.undo_lay(netlist_id, net_id)
 
                         # Remove coordinate
@@ -207,11 +207,11 @@ def make_nets(circuit: Circuit, netlist_id: int, runTime: int):
     # SAVE FAILED NETS
     failed = []
 
-    print(f"\n------CONNECTING GATES------\n")
+    # print(f"\n------CONNECTING GATES------\n")
     for net_id in sorted_nets:
 
         net_id += 1
-        print(f"\nDOING: net_id={net_id}")
+        # print(f"\nDOING: net_id={net_id}")
         
         # Get start and end position
         gates = circuit.get_net(netlist_id, net_id).gates
@@ -230,22 +230,23 @@ def make_nets(circuit: Circuit, netlist_id: int, runTime: int):
         # No possible path for this wire
         if new_circuit == None:
             failed.append(net_id)
-            print(f"\nFAILED: net_id={net_id}")
+            # print(f"\nFAILED: net_id={net_id}")
             # break if you want to check further here
             return None
+
         else:
             circuit = new_circuit
             # Lay last gate
             circuit.lay_wire(netlist_id, net_id, end_position)
 
 
-        print(f"\nSUCCES: net_id={net_id}")
+        # print(f"\nSUCCES: net_id={net_id}")
 
-    if len(failed) == 0:
-        print("\n----ALL NETS LINKED-------")
-    else:
-        print("\n----DONE, BUT FAILED NETS------")
-        for net_id in failed:
-            print(f"NET {net_id} FAILED")
+    # if len(failed) == 0:
+    #     print("\n----ALL NETS LINKED-------")
+    # else:
+    #     print("\n----DONE, BUT FAILED NETS------")
+    #     for net_id in failed:
+    #         print(f"NET {net_id} FAILED")
 
     return circuit

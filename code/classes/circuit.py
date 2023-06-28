@@ -462,7 +462,7 @@ class Circuit():
             wire = Wire(position[0], position[1], position[2])
         else:
             wire = Wire(position[0], position[1])
-        print(f"LAY WIRE: {wire}")
+        # print(f"LAY WIRE: {wire}")
         net: Net = self.get_net(netlist_id, net_id)
         net.add_wire(wire)
 
@@ -632,7 +632,7 @@ class Circuit():
         POST: wire is removed from self.netlists[netlist_id][net_id - 1]
         """
 
-        print("UNDO LAY")
+        # print("UNDO LAY")
         net: Net = self.get_net(netlist_id, net_id)
         net.unadd_wire()
 
