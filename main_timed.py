@@ -5,7 +5,6 @@ sys.path.append(os.path.join(directory, "code", "classes"))
 sys.path.append(os.path.join(directory, "code", "algorithms"))
 
 from circuit import Circuit
-from hill_climber import HillClimber
 from greedy import make_nets
 
 
@@ -14,8 +13,8 @@ if __name__ == "__main__":
     # Runtime in minutes
     runTime = 1
     
-    chip = 0
-    net =  2
+    chip = 1
+    net =  1
     net = (chip * 3) + net
     #NOTE PROBLEM OF CIRCUIT CLASS
     net_id = 1
