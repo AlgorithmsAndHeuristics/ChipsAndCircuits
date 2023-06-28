@@ -1,32 +1,35 @@
 """
 HEURISTICS:
-'LAYER INFLUENCED'
 >> Assumption: better off playing with layers and always keeping shortest distance (x&y)
+
 1. Start with the shortest distances 
 >> Assumption: larger ones are most interfering
+
 LOOP:
 2. Lay a straight line, try on plane z=0 first
->> Assumption: straight line is best option
-3. If intersection encountered, start again and move a plane up on first step
-4. If intersection encountered, start again and move a plane down on first step
-5. If intersection encountered, start again and move two planes up on first step
-6. etc etc
+>> Assumption: manhattan line is best option
+>> NOTE tries only one of the manhattan lines
+
+3. If intersection encountered, start again and move a plane up,
+leaving connections from the gate behind
+
+4. If no intersections, do for all other nets
+
+5. If all manhattan distances are put in place, start connecting the gates one for one,
+start with the gates that have to connect to the most nets 
+>> Assumption: most connected gates will have most conflicts
 """
 
 import random
-import os
-import sys
+from typing import Optional
 
-directory = os.path.dirname(os.path.realpath(__file__))
-parent_directory = os.path.dirname(directory)
-sys.path.append(os.path.join(parent_directory, "classes"))
-
-from circuit import Circuit
-from net import Net
-from gate import Gate
-from wire import Wire
+from code.classes.circuit import Circuit
+from code.classes.net import Net
+from code.classes.gate import Gate
+from code.classes.wire import Wire
 
 Position = tuple[int, int, int]
+
 
 def lay_shortest_line(circuit: Circuit, netlist_id: int, net_id: int):
     """
@@ -128,9 +131,16 @@ def layer_line(circuit: Circuit, netlist_id: int, net_id: int) -> Circuit:
     return circuit
 
 
-def manhattan_line_x(circuit: Circuit, netlist_id: int, net_id: int, start_position: Position, end_position: Position) -> Circuit:
+def manhattan_line_x(circuit: Circuit, netlist_id: int, net_id: int, 
+                     start_position: Position, end_position: Position) -> Optional[Circuit]:
     """
+    Recursive function for laying a manhattan line 
+    where direction in x is always a priority, and z direction is not an option
 
+    PRE: circuit of type Circuit, netlist_id and net_id of type int
+    and start_position & end_position of type Position
+    POST: circuit of type Circuit with manhattan line layed down for requested
+    netlist_id and net_id, returns None if not possible to lay down.
     """
 
     # Get directions and distances, order is x then y
@@ -179,12 +189,17 @@ def manhattan_line_x(circuit: Circuit, netlist_id: int, net_id: int, start_posit
     return None
 
 
-def intitial_lines(circuit: Circuit, netlist_id: int, sorted_nets: list[int]):
+def intitial_lines(circuit: Circuit, netlist_id: int, sorted_nets: list[int]) -> Circuit:
     """
     Lay the initial lines following the heuristics:
     1. lay one of the shortest line possible between the gates
     2. if this line intersects with another net, move it layers up until
     it doesn't intersect with any other net.
+
+    PRE: circuit of type Circuit, netlist_id of type int
+    and sorted net of type list[int]
+    POST: returns Circuit where lines all initial wirings are layed
+    for all the nets.
     """
 
     for net_id in sorted_nets:
@@ -226,9 +241,20 @@ def intitial_lines(circuit: Circuit, netlist_id: int, sorted_nets: list[int]):
     return new_circuit
 
 
-def manhattan_line_up(circuit: Circuit, netlist_id: int, net_id: int, start_position: Position, end_position: Position, position_index: int = None, gate_pos: int = None) -> Circuit:
+def manhattan_line_up(circuit: Circuit, netlist_id: int, net_id: int, 
+                      start_position: Position, end_position: Position, 
+                      position_index: int = None, gate_pos: int = None) -> Circuit:
     """
+    Recursive function for laying a manhattan line 
+    where direction in z is always a priority, x and y have random priority.
+    From which gate (1st or 2nd) should be passed to know how wires should
+    be layed. Also starting gate position should be passed 
+    to know not to go there.
 
+    PRE: circuit of type Circuit, netlist_id and net_id of type int
+    and start_position & end_position of type Position
+    POST: circuit of type Circuit with manhattan line layed down for requested
+    netlist_id and net_id, returns None if not possible to lay down.
     """
 
     # Get directions and distances, order is x to y to z
@@ -297,18 +323,20 @@ def manhattan_line_up(circuit: Circuit, netlist_id: int, net_id: int, start_posi
 
 def connect_all_gates(circuit: Circuit, netlist_id: int, sorted_nets: list[int]):
     """
-    Connect all wires that remain unconnected to the gates.
+    Connect all wires that remain unconnected to the gates for all nets.
+    Depending on which gate get's connected (1st or 2nd gate in a net),
+    parameters for laying the manhattan lines should be passed accordingly.
+
+
+    PRE: circuit of type Circuit, netlist_id of type int
+    and sorted_nets of type list[int]
     """
 
     print(f"\n------CONNECTING GATES------")
 
-    amount = 0
     for net_group in sorted_nets:
         print(f"\nNET GROUP: {net_group}")
         for net_id, index_gate_net in net_group:
-            # if amount == 1:
-            #     break
-            # amount += 1
             
             print(f"\nGATE CHECKING: net_id={net_id + 1} | gate_index{index_gate_net}")
             net_id += 1
@@ -357,6 +385,7 @@ def connect_all_gates(circuit: Circuit, netlist_id: int, sorted_nets: list[int])
                     print(f"\nLAY {start_position}")
                     circuit.lay_from_gate(netlist_id, net_id, new_start_position, 1)
                     
+                    # Wire index is 2 here
                     new_circuit = manhattan_line_up(circuit, netlist_id, net_id, 
                                                     new_start_position, end_position, 2, gate_pos)
                     
@@ -366,6 +395,7 @@ def connect_all_gates(circuit: Circuit, netlist_id: int, sorted_nets: list[int])
                                       end_position[1] + entrance[1],
                                       end_position[2] + entrance[2])
                     
+                    # Wire index not necessary because from 2nd gate
                     new_circuit = manhattan_line_up(circuit, netlist_id, net_id, 
                                                     start_position, new_end_position, None, gate_pos)
 
@@ -385,13 +415,10 @@ def connect_all_gates(circuit: Circuit, netlist_id: int, sorted_nets: list[int])
                 print("\nFAILED")
                 return circuit
 
-        # if amount == 1:
-        #     break
-
     return circuit
 
 
-def greedy_make_nets(circuit: Circuit, netlist_id: int):
+def make_nets(circuit: Circuit, netlist_id: int):
     """
     Go off all nets in netlist in order of distance between it's gates,
     make a straight line, and correct the line if necessary.
@@ -417,4 +444,3 @@ def greedy_make_nets(circuit: Circuit, netlist_id: int):
     circuit = connect_all_gates(circuit, netlist_id, sorted_nets)
 
     return circuit
-

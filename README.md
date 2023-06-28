@@ -19,7 +19,7 @@ Het bestand baseline.py bevat twee baseline algoritmes: random path en manhattan
 
 ### Test (Testing)
 
-Om greedy te draaien, gebruik je:
+Om greedy of randomised greedy te draaien, gebruik je:
 
 ```
 python main.py
@@ -30,9 +30,9 @@ Om random path en manhattan path te draaien, gebruik je:
 ```
 python baseline.py
 ```
-Na het runnen van main.py of baseline.py wordt je door diverse tekst prompts door de run opties genavigeerd.  
+Na het runnen van main.py of baseline.py wordt je door diverse tekst prompts door de run opties genavigeerd. Hierbij krijg je keuze tussen **plot modus** waar het algoritme één keer gerund wordt en de resultaten in een plot weergegeven worden, en **experiment modus** waar het algoritme gedurende een geprompte tijd runt en alle kosten, runtime en het aantal bezochte states aan _baseline_costs.txt_ of _main_costs.txt_ toegevoegd wordt.
 
-Onze resultaten van beide algoritmes zijn te zien in code/experiments/experiments.ipynb
+Onze resultaten van alle algoritmes zijn te zien in code/experiments/experiments.ipynb
 
 ## Auteurs (Authors)
 
