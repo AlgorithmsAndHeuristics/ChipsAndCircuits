@@ -54,7 +54,7 @@ and the cost gets written to experiments/main_costs.txt.\n")
         while True:
             run_count = int(input("> "))
 
-            if type(total_time == int):
+            if type(run_count == int):
                 break
     else:
         run_count = 1
@@ -67,7 +67,6 @@ and the cost gets written to experiments/main_costs.txt.\n")
 
     for i in range(run_count):
     
-    
         start_time_local = time.time()
         
         circuit = Circuit(f"data/chip_{chip}/print_{chip}.csv")
@@ -76,8 +75,8 @@ and the cost gets written to experiments/main_costs.txt.\n")
         circuit.load_netlist(f"data/chip_{chip}/netlist_{netlist}.csv")
 
 
-        for net in circuit.netlists[0].nets.values():
-            print(f"Gate {net.gates[0]} to gate {net.gates[1]}")
+        #for net in circuit.netlists[0].nets.values():
+        #    print(f"Gate {net.gates[0]} to gate {net.gates[1]}")
 
         make_nets(circuit, net_id)
 

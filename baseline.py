@@ -142,9 +142,6 @@ and the cost gets written to experiments/baseline_costs.txt.\n")
 
         print(f"Runtime: {time.time() - start_time_local}")
         print(f"States visited: {sum([net.state_counter for net in circuit.netlists[0].nets.values()])}")
-        
-
-        print(circuit.netlists[0].get_intersections())
 
 
         circuit.plot_grid(f"Chip {chip}, Netlist {netlist_id}")

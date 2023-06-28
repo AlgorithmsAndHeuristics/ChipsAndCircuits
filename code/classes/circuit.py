@@ -592,32 +592,6 @@ class Circuit():
         POST: Netlist has been added to self.netlists"""
 
         self.netlists.append(Netlist(path, self.gates))
-    
-
-    def make_grid(self, factor: int) -> None:
-        """
-        Make the grid with a multiplying factor.
-        PRE: Factor of type int, must be larger or equal to 1
-        POST: Grid is dimensions are multiplied by factor,
-        center stays the same"""
-
-        assert factor >= 1, "Can't make grid smaller than minimum distance"
-
-        # Create the grid based on the furthest gates
-        org_width = max([self.gates[id].position[0] for id in self.gates])
-        org_height = max([self.gates[id].position[1] for id in self.gates])
-        grid_width = int(org_width * factor)
-        grid_height = int(org_height * factor)
-        self.grid = [['_' for i in range(grid_width)] for y in range(grid_height)]
-        
-        # Place the gates on the grid
-        x_move = (grid_width - org_width) // 2
-        y_move = (grid_height - org_height) // 2
-
-        for id in self.gates:
-            gate = self.gates[id]
-            gate.position = (gate.position[0] - 1 + x_move, gate.position[1] - 1 + y_move)
-            self.grid[gate.position[1]][gate.position[0]] = gate.id
 
 
     def next_positions(self, netlist_id: int, net_id: int) -> list[tuple[int, int]]:

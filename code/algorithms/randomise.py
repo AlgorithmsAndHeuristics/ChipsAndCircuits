@@ -1,4 +1,11 @@
-from code.classes.circuit import Circuit
+import os
+import sys
+
+directory = os.path.dirname(os.path.realpath(__file__))
+parent_directory = os.path.dirname(directory)
+sys.path.append(os.path.join(parent_directory, "classes"))
+
+from circuit import Circuit
 import random
 
 Position = tuple[int, int]
