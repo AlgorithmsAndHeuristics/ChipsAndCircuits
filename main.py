@@ -103,7 +103,7 @@ and the cost gets written to experiments/main_costs.txt.\n")
 
             # Run the iterative greedy algorithm
             else:
-                succesfull_circuit = random_greedy_make_nets_timed(timeout = 20, circuit = circuit, net_id = net_id)     
+                succesfull_circuit = random_greedy_make_nets_timed(timeout = 60, circuit = circuit, net_id = net_id)     
         
             # Only write data to txt file if the algorithm found a solution
             if not succesfull_circuit:
@@ -127,7 +127,6 @@ and the cost gets written to experiments/main_costs.txt.\n")
         print(chosen_algorithm)
         # Run the greedy algorithm
         if chosen_algorithm == 0:
-            print("AAA")
             greedy_make_nets(circuit, net_id)
             succesful_circuit = True
 
