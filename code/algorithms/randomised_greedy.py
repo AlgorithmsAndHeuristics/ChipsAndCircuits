@@ -181,7 +181,11 @@ def lay_manhattan(circuit: Circuit, netlist_id: int, net_id: int, runTime: int, 
 
 
 
+<<<<<<< HEAD
 def make_nets(circuit: Circuit, netlist_id: int, runTime: int):
+=======
+def random_greedy_make_nets(circuit: Circuit, netlist_id: int, runTime: int):
+>>>>>>> fb4e9e20864bd2248baa65936a20978e177c087a
     """
     Go off all nets in netlist in order of amount of connections of a gate.
 

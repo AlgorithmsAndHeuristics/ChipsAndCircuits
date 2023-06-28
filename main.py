@@ -6,11 +6,12 @@ sys.path.append(os.path.join(directory, "code", "classes"))
 sys.path.append(os.path.join(directory, "code", "algorithms"))
 
 from circuit import Circuit
-#from hill_climber import HillClimber
-from state_pruner import make_nets
+from greedy import greedy_make_nets
+from randomised_greedy import random_greedy_make_nets
 
 
 if __name__ == "__main__":
+    net_id = 1
 
     print("Please select which chip you'd like to use.\n")
     for i in range(3): print(f"Enter {i} to use chip_{i}")
@@ -32,9 +33,21 @@ if __name__ == "__main__":
             if netlist in range(chip * 3 + 1,  chip * 3 + 4):
                 break
 
+    print("\nPlease select which algorithm you'd like to use.\n\
+Enter 0 to use the greedy algorithm.\n\
+Enter 1 to use the iterative greedy algorithm.\n")
+
+    # Prompt for the algorithm specification
+    while True:
+        chosen_algorithm = int(input("> "))
+
+        if chosen_algorithm in range(2):
+            break        
+
+
     print("Would you like to run the algorithm in plot mode or experiment mode?\n\
 Enter 0 for plot mode: The algorithm is run once and the resulting configuration gets presented in a plot.\n\
-Enter 1 for experiment mode: The algorithm is run a prompted number of times \
+Enter 1 for experiment mode: The algorithm is run for the given duration \
 and the cost gets written to experiments/main_costs.txt.\n")
     
     while True:
@@ -48,58 +61,71 @@ and the cost gets written to experiments/main_costs.txt.\n")
         plot = False
         write = True
 
-        print("How many times would you like to run the algorithm? Please enter a positive, whole number.")
+        print("For how many seconds would you like to run the algorithm? Please enter a positive, whole number.")
 
         # Prompt for test count
         while True:
-            run_count = int(input("> "))
+            total_time = int(input("> "))
 
-            if type(run_count == int):
+            if type(total_time == int):
                 break
-    else:
-        run_count = 1
-        plot = True
-        write = False
 
-    use_hill_climber: bool = False
-    net_id = 1
-
-
-    for i in range(run_count):
-    
-        start_time_local = time.time()
+        start_time_global = time.time()
         
-        circuit = Circuit(f"data/chip_{chip}/print_{chip}.csv")
-
-
-        circuit.load_netlist(f"data/chip_{chip}/netlist_{netlist}.csv")
-
-
-        #for net in circuit.netlists[0].nets.values():
-        #    print(f"Gate {net.gates[0]} to gate {net.gates[1]}")
-
-        make_nets(circuit, net_id)
-
-
-        #if use_hill_climber:
-            #hill_climber: HillClimber = HillClimber(circuit)
+        # Run for the specified duration
+        while time.time() - start_time_global < total_time:
+        
+            start_time_local = time.time()
             
+            circuit = Circuit(f"data/chip_{chip}/print_{chip}.csv")
+            circuit.load_netlist(f"data/chip_{chip}/netlist_{netlist}.csv")
+
+
+            # Run the greedy algorithm
+            if chosen_algorithm == 0:
+                greedy_make_nets(circuit, net_id)
+                succesfull_circuit  = True
+
+            # Run the iterative greedy algorithm
+            else:
+                succesfull_circuit = random_greedy_make_nets(circuit, net_id, 60)     
         
-        # Print the configuration cost as a status report
-        print(f"Configuration cost: {sum([netlist.get_cost() for netlist in circuit.netlists])}")
+            # Only write data to txt file if the algorithm found a solution
+            if not succesfull_circuit:
+                print("Failed to find a solution")
+            
+            else:
+                # Print the configuration cost as a status report
+                print(f"Configuration cost: {sum([netlist.get_cost() for netlist in circuit.netlists])}")
 
-
-        if plot:
-            # Print relevant data and plot the circuit
-            print(f"Runtime: {time.time() - start_time_local}")
-            print(f"States visited: {sum([net.state_counter for net in circuit.netlists[0].nets.values()])}")
-
-            circuit.plot_grid("Chip 0, Netlist 1")
-
-        if write: 
-            # Write the cost and excecution runtime to the file
-            with open('code/experiments/results/main_costs.txt', "a") as file:
+                with open('code/experiments/results/main_costs.txt', "a") as file:
                     cost = sum([netlist.get_cost() for netlist in circuit.netlists])
                     visited_states = sum([net.state_counter for net in circuit.netlists[0].nets.values()])
                     file.write(f'{cost},{time.time() - start_time_local},{visited_states}\n')
 
+    # Run the chosen algorithm in plot mode
+    else:
+        start_time_local = time.time()
+        circuit = Circuit(f"data/chip_{chip}/print_{chip}.csv")
+        circuit.load_netlist(f"data/chip_{chip}/netlist_{netlist}.csv")
+
+        # Run the greedy algorithm
+        if not chosen_algorithm == 0:
+            greedy_make_nets(circuit, net_id)
+            succesful_circuit = True
+
+        # Run the random greedy algorithm
+        else:
+            succesful_circuit = random_greedy_make_nets(circuit, net_id, 60)         
+
+        # Only return relevant data if the algorithm found a solution
+        if not succesful_circuit:
+            print("Failed to find a solution")
+            
+        else:
+            # Print relevant data and plot the circuit
+            print(f"Runtime: {time.time() - start_time_local}")
+            print(f"States visited: {sum([net.state_counter for net in circuit.netlists[0].nets.values()])}")
+        
+        # Plot the grid
+        circuit.plot_grid(f"Chip {chip}, Netlist {netlist}")
