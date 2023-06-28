@@ -231,7 +231,8 @@ def make_nets(circuit: Circuit, netlist_id: int, runTime: int):
         if new_circuit == None:
             failed.append(net_id)
             print(f"\nFAILED: net_id={net_id}")
-            break
+            # break if you want to check further here
+            return None
         else:
             circuit = new_circuit
             # Lay last gate
