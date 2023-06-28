@@ -21,7 +21,7 @@ class Circuit():
 
         self.netlists: list[Netlist] = []
         self.gates: dict[int, Gate] = {}
-        self.gate_positions: set[tuple[int, int]] = set()
+        self.gate_positions: list[tuple[int, int]] = []
         self.border: int = border
 
         print_x = pd.read_csv(print_path)
@@ -29,8 +29,7 @@ class Circuit():
         # Read the gates from the print_x file
         for index, gate in print_x.iterrows():
             self.gates[int(gate[0])] = (Gate(int(gate[0]), (int(gate[1]), int(gate[2]))))
-            self.gate_positions.add((gate[1], gate[2]))
-
+            self.gate_positions.append((gate[1], gate[2]))
 
     def any_intersections(self, netlist_id: int, net_id: int = None) -> bool:
         """
@@ -47,14 +46,12 @@ class Circuit():
             wiring: list[Wire] = net.wiring
             check_set = self.gate_positions
 
-            # Remove own gate positions of net
-            for gate in net.gates:
-                check_set.discard(gate.position)
-
             for wire in wiring:
                 # If a wire is on a gate it's an intersection, thus return True
                 if (wire.x, wire.y) in check_set:
-                    return True
+                    # Check if not net's own gates
+                    if (wire.x, wire.y) != net.gates[0].position and (wire.x, wire.y) != net.gates[1].position:
+                        return True
 
         netlist = self.netlists[netlist_id  - 1]
         
