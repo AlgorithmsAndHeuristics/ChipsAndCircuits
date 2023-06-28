@@ -14,7 +14,7 @@ Position = tuple[int, int]
 # TODO: self.layers
 class Circuit():
     
-    def __init__(self, print_path: str, border: int = 8) -> None:
+    def __init__(self, print_path: str, border: int = 0) -> None:
         """
         PRE: The path to the print_x.csv file of a chip and a growth factor
         POST: Initializes a Circuit object"""

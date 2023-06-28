@@ -15,7 +15,11 @@ from manhattan_path import make_manhattan_connection
 # Attempt to lay the nets within the given time limit
 # Adds the cost values to costs.txt
 @timeoutable()
-def make_net_timed(circuit, chip_id, netlist_id, plot: bool = False, write: bool = False):
+def make_net_timed(circuit, chip_id, netlist_id, plot: bool = False):
+    """
+    PRE: circuit object, chip_id, netlist_id and boolean for grid plotting.
+    POST: Runs random algorithm on the circuit returns plot or bool indicating the run was succesful.
+    """
 
     make_nets(circuit = circuit, netlist_id = netlist_id)
 
@@ -40,6 +44,7 @@ if __name__ == "__main__":
 
         if chip in range(3):
                 break
+
 
     print(f"\nPlease select which netlist you'd like to use\n")
     for i in range(3): print(f"Enter {chip * 3 + i + 1} to use netlist_{chip * 3 + i + 1}")
@@ -66,6 +71,15 @@ Enter 1 to use the random path algorithm.\n")
             break
 
     if chosen_algorithm == 1:
+
+        # Set border sizes depending on the chosen chip
+        if chip == 0:
+             border = 8
+        elif chip == 1:
+             border = 17
+        elif chip == 2:
+             border = 17
+
         print("Would you like to run the algorithm in plot mode or experiment mode?\n\
 Enter 0 for plot mode: The algorithm is run once and the resulting configuration gets presented in a plot.\n\
 Enter 1 for experiment mode: The algorithm is run for a prompted duration \
@@ -79,6 +93,7 @@ and the cost gets written to experiments/baseline_costs.txt.\n")
 
         # Ask for a run count in case of experiment mode
         if chosen_mode == 1:
+
             plot = False
             write = True
 
@@ -100,18 +115,16 @@ and the cost gets written to experiments/baseline_costs.txt.\n")
     
     # Random path:
     if chosen_algorithm == 1:
-
-        # Run the algorithm the specified amount of times
-        #for i in range(run_count):
         
         start_time_global = time.time()
         
+        # Run for the specified duration
         while time.time() - start_time_global < total_time:
             
             # Time each run
             start_time_local = time.time()
 
-            circuit = Circuit(f"data/chip_{chip}/print_{chip}.csv", border = 8)
+            circuit = Circuit(f"data/chip_{chip}/print_{chip}.csv", border = border)
             circuit.load_netlist(f"data/chip_{chip}/netlist_{netlist_id}.csv")
 
             # Write the data to the file if the netlist was completed within the given time
@@ -129,9 +142,6 @@ and the cost gets written to experiments/baseline_costs.txt.\n")
 
     # Manhattan
     else: 
-        # Time the run
-
-
         start_time_local = time.time()
 
         circuit = Circuit(f"data/chip_{chip}/print_{chip}.csv")

@@ -9,6 +9,11 @@ class Wire():
 
 
     def __init__(self, x: int, y: int, z: int):
+        """
+        PRE: x, y and z coördinates.
+        POST: initializes a Wire object.
+        """
+
         self.x = x
         self.y = y
         self.z = z
