@@ -98,10 +98,28 @@ Het printen van een **Circuit** object geeft een array waar lege plekken weergeg
 # Algorithms
 De algorithms folder bevat de diverse algoritmes om oplossingen voor het Chips & Circuits probleem te vinden. In deze folder vind je:
 
-## random.py
-Bevat de code voor ons baseline algoritme: **Random Path**. Dit algoritme werkt als volgt:
+## randomise.py
+Bevat de code voor ons originele baseline algoritme: **Random Path**. De volgende afbeelding toont het ontwerp van het algoritme:
 ![Random Path Flowchart](../images/random_path_flowchart.png)
 
 random.py bevat de volgende functies:
 
-* **wire_net(circuit, net):** maakt de draden voor een gegeven Net aan door willekeurige, valide posities te kiezen. Begin opnieuw als de draad vast komt te zitten.
+## manhattan_path.py
+Bevat de code voor ons tweede baseline algoritme: **Manhattan path**. Dit algoritme legt een manhattan path aan wire tussen de gates van de nets in een netlist. (Werk van Matyas)
+
+## state_pruner.py
+Bevat het originele greedy algoritme: **State pruner**. Legt manhattan paths van de langste naar de kortste nets en gaat een laag omhoog als er een obstakel gevonden is. Verbindt vervolgens de gates aan het pad afhankelijk van welke ingangen van de gate nog beschikaar zijn. (Werk van Lindel)
+
+## greedy.py
+Bevat het tweede Greedy algoritme: **Greedy**. (beschrijving) (Werk van Lindel)
+
+## hill_climber.py
+Bevat het **hillclimber** algorite. (beschrijving) (Werk van Joey)
+
+# Experiments
+
+## experiments.ipynb
+Bevat de visualisaties van alle uitgevoerde tests en placeholder visualisaties voor tests op toekomstige algoritmes. (Werk van Matyas)
+
+## results
+Bevat .txt bestanden met de resultaten (cost, runtime, aantal bezochte states) van diverse tests.
