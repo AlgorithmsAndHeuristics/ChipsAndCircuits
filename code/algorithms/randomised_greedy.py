@@ -9,7 +9,7 @@ from circuit import Circuit
 Position = tuple[int, int, int]
 
 
-def lay_manhattan(circuit: Circuit, netlist_id: int, net_id: int, runTime: int, start_position: Position, end_position: Position, passed_coordinates: list[Position], borders, max_length, recurs_count, count_non_man, max_non_man) -> Circuit:
+def lay_manhattan(circuit: Circuit, netlist_id: int, net_id: int, start_position: Position, end_position: Position, passed_coordinates: list[Position], borders, max_length, recurs_count, count_non_man, max_non_man) -> Circuit:
     """
     Lay manhattan distance between start and end position. Everytime
     the manhattan directions are not possible, try all other possible directions.
@@ -95,7 +95,7 @@ def lay_manhattan(circuit: Circuit, netlist_id: int, net_id: int, runTime: int, 
                 # Remember coordinate
                 passed_coordinates.append(new_start_position)
 
-                if lay_manhattan(circuit, netlist_id, net_id, runTime, new_start_position, end_position, passed_coordinates, borders, max_length, recurs_count + 1, count_non_man, max_non_man):
+                if lay_manhattan(circuit, netlist_id, net_id, new_start_position, end_position, passed_coordinates, borders, max_length, recurs_count + 1, count_non_man, max_non_man):
                     # print(f"\n-----------------------------------------------------------BACK TO RECURSION = {recurs_count}")
                     return circuit
                     
@@ -163,7 +163,7 @@ def lay_manhattan(circuit: Circuit, netlist_id: int, net_id: int, runTime: int, 
                     # Remember coordinate
                     passed_coordinates.append(new_start_position)
 
-                    if lay_manhattan(circuit, netlist_id, net_id, runTime, new_start_position, end_position, passed_coordinates, borders, max_length, recurs_count + 1, count_non_man + 1, max_non_man):
+                    if lay_manhattan(circuit, netlist_id, net_id, new_start_position, end_position, passed_coordinates, borders, max_length, recurs_count + 1, count_non_man + 1, max_non_man):
                         # print(f"\n-----------------------------------------------------------BACK TO RECURSION = {recurs_count}")
                         return circuit
                         
@@ -181,11 +181,11 @@ def lay_manhattan(circuit: Circuit, netlist_id: int, net_id: int, runTime: int, 
 
 
 
-def random_greedy_make_nets(circuit: Circuit, netlist_id: int, runTime: int):
+def random_greedy_make_nets(circuit: Circuit, netlist_id: int):
     """
     Go off all nets in netlist in order of amount of connections of a gate.
 
-    PRE: circuit of type Circuit and netlist_id and runTime type int
+    PRE: circuit of type Circuit and netlist_id of type int
     POST: nets from netlist of circuit are connected
     """
 
@@ -225,7 +225,7 @@ def random_greedy_make_nets(circuit: Circuit, netlist_id: int, runTime: int):
         passed_coordinates = [start_position]
 
         # Lay manhattan path
-        new_circuit = lay_manhattan(circuit, netlist_id, net_id, runTime, start_position, end_position, passed_coordinates, borders, max_length, 1, 0, max_non_man)
+        new_circuit = lay_manhattan(circuit, netlist_id, net_id, start_position, end_position, passed_coordinates, borders, max_length, 1, 0, max_non_man)
 
         # No possible path for this wire
         if new_circuit == None:

@@ -1,6 +1,5 @@
-import os, sys
+import os, sys, time
 from stopit import threading_timeoutable as timeoutable
-import time
 
 directory = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(directory, "code"))

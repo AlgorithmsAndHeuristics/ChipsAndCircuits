@@ -1,5 +1,6 @@
-import os, sys
-import time
+import os, sys, time
+from stopit import threading_timeoutable as timeoutable
+
 directory = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(directory, "code"))
 sys.path.append(os.path.join(directory, "code", "classes"))
@@ -8,6 +9,20 @@ sys.path.append(os.path.join(directory, "code", "algorithms"))
 from circuit import Circuit
 from greedy import greedy_make_nets
 from randomised_greedy import random_greedy_make_nets
+
+@timeoutable()
+def random_greedy_make_nets_timed(circuit, net_id):
+    """
+    PRE: circuit object, chip_id and netlist_id.
+    POST: Runs random algorithm on the circuit returns bool indicating if the run was succesful.
+    """
+
+    succesful_circuit = random_greedy_make_nets(circuit, net_id)
+
+    if not succesful_circuit:
+         return False
+    else:
+         return True
 
 
 if __name__ == "__main__":
@@ -88,7 +103,7 @@ and the cost gets written to experiments/main_costs.txt.\n")
 
             # Run the iterative greedy algorithm
             else:
-                succesfull_circuit = random_greedy_make_nets(circuit, net_id, 60)     
+                succesfull_circuit = random_greedy_make_nets_timed(timeout = 20, circuit = circuit, net_id = net_id)     
         
             # Only write data to txt file if the algorithm found a solution
             if not succesfull_circuit:
