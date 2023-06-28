@@ -68,7 +68,7 @@ Enter 1 to use the random path algorithm.\n")
     if chosen_algorithm == 1:
         print("Would you like to run the algorithm in plot mode or experiment mode?\n\
 Enter 0 for plot mode: The algorithm is run once and the resulting configuration gets presented in a plot.\n\
-Enter 1 for experiment mode: The algorithm is run a prompted number of times \
+Enter 1 for experiment mode: The algorithm is run for a prompted duration \
 and the cost gets written to experiments/baseline_costs.txt.\n")
 
         while True:
@@ -82,7 +82,7 @@ and the cost gets written to experiments/baseline_costs.txt.\n")
             plot = False
             write = True
 
-            print("For how many seconds would you like to run algorithm? Please enter a positive, whole number.")
+            print("For how many seconds would you like to run the algorithm? Please enter a positive, whole number.")
 
             # Prompt for test count
             while True:
@@ -149,10 +149,3 @@ and the cost gets written to experiments/baseline_costs.txt.\n")
 
         circuit.plot_grid(f"Chip {chip}, Netlist {netlist_id}")
 
-
-
-        
-
-
-        
-    
