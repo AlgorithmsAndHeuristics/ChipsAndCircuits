@@ -30,6 +30,7 @@ class Circuit():
             self.gates[int(gate[0])] = (Gate(int(gate[0]), (int(gate[1]), int(gate[2]))))
             self.gate_positions.append((gate[1], gate[2]))
 
+
     def any_intersections(self, netlist_id: int, net_id: int = None) -> bool:
         """
         Check if there are any intersections.
@@ -560,3 +561,21 @@ class Circuit():
         ):
             return False
         return True
+    
+
+    def __getstate__(self):
+        """
+        Return a dictionary of the Circuit's state."""
+        
+        return {'netlists': self.netlists, 'gates': self.gates, 
+                'gate_positions': self.gate_positions, 'border': self.border}
+
+
+    def __setstate__(self, state):
+        """
+        Restore the Circuit's state from the state dictionary."""
+
+        self.netlists = state['netlists']
+        self.gates = state['gates']
+        self.gate_positions = state['gate_positions']
+        self.border = state['border']

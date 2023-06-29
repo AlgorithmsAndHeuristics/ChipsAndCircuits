@@ -1,4 +1,4 @@
-import os, sys, time
+import os, sys, time, pickle
 from stopit import threading_timeoutable as timeoutable
 
 directory = os.path.dirname(os.path.realpath(__file__))
@@ -9,6 +9,7 @@ sys.path.append(os.path.join(directory, "code", "algorithms"))
 from circuit import Circuit
 from greedy import greedy_make_nets
 from randomised_greedy import random_greedy_make_nets
+
 
 @timeoutable()
 def random_greedy_make_nets_timed(circuit, net_id):
@@ -86,6 +87,8 @@ and the cost gets written to experiments/main_costs.txt.\n")
                 break
 
         start_time_global = time.time()
+
+        high_score = 0
         
         # Run for the specified duration
         while time.time() - start_time_global < total_time:
@@ -111,12 +114,35 @@ and the cost gets written to experiments/main_costs.txt.\n")
             
             else:
                 # Print the configuration cost as a status report
-                print(f"Configuration cost: {sum([netlist.get_cost() for netlist in circuit.netlists])}")
+                cost = sum([netlist.get_cost() for netlist in circuit.netlists])
+                print(f"Configuration cost: {cost}")
 
                 with open('code/experiments/results/main_costs.txt', "a") as file:
-                    cost = sum([netlist.get_cost() for netlist in circuit.netlists])
                     visited_states = sum([net.state_counter for net in circuit.netlists[0].nets.values()])
                     file.write(f'{cost},{time.time() - start_time_local},{visited_states}\n')
+
+                if cost > high_score:
+                    high_score = cost
+                    with open(f'code/experiments/results/highscore_{chip}{netlist}.pkl', "wb") as file:
+                        pickle.dump(circuit, file)
+
+
+        # Ask for showing a plot of the highscore
+        print("Would you like to plot the highscore?\n\
+Enter 0 for yes\n\
+Enter 1 for no\n")
+    
+        while True:
+            check_high = int(input("> "))
+
+            if check_high in range(2):
+                break
+
+        if check_high == 0:
+            with open(f'code/experiments/results/highscore_{chip}{netlist}.pkl', 'rb') as f:
+                circuit = pickle.load(f)
+
+            circuit.plot_grid(f"Chip {chip}, Netlist {netlist}")
 
     # Run the chosen algorithm in plot mode
     else:

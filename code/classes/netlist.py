@@ -145,3 +145,17 @@ class Netlist():
 
         # Return the total wire count with the wires on gate positions included once
         return len(total_wires) + len(wired_gates)
+
+
+    def __getstate__(self):
+        """
+        Return a dictionary of the Netlist's state."""
+        
+        return {'nets': self.nets}
+
+
+    def __setstate__(self, state):
+        """
+        Restore the Netlist's state from the state dictionary."""
+
+        self.nets = state['nets']

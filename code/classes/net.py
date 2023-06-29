@@ -63,3 +63,18 @@ class Net():
         POST: Last wire has been removed from self.wiring"""
         self.wiring.pop()
 
+
+    def __getstate__(self):
+        """
+        Return a dictionary of the Net's state."""
+
+        return {'gates': self.gates, 'wiring': self.wiring, 'state_counter': self.state_counter}
+
+
+    def __setstate__(self, state):
+        """
+        Restore the Net's state from the state dictionary."""
+
+        self.gates = state['gates']
+        self.wiring = state['wiring']
+        self.state_counter = state['state_counter']

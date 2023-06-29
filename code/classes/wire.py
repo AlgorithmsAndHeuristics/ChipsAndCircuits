@@ -21,3 +21,19 @@ class Wire():
     
     def __repr__(self) -> str:
         return f"({self.x}, {self.y}, {self.z})"
+
+
+    def __getstate__(self):
+        """
+        Return a dictionary of the Wire's state."""
+        
+        return {'x': self.x, 'y': self.y, 'z': self.z}
+
+
+    def __setstate__(self, state):
+        """
+        Restore the Wire's state from the state dictionary."""
+
+        self.x = state['x']
+        self.y = state['y']
+        self.z = state['z']

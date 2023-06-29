@@ -28,3 +28,18 @@ class Gate():
         dy = abs(self.position[1] - other_gate.position[1])
 
         return int(math.sqrt(dx**2 * dy**2))
+
+
+    def __getstate__(self):
+        """
+        Return a dictionary of the Gate's state."""
+        
+        return {'id': self.id, 'position': self.position}
+
+
+    def __setstate__(self, state):
+        """
+        Restore the Gate's state from the state dictionary."""
+
+        self.id = state['id']
+        self.position = state['position']
