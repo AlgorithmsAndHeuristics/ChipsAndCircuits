@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
     print("\nPlease select which algorithm you'd like to use.\n\
 Enter 0 to use the greedy algorithm.\n\
-Enter 1 to use the iterative greedy algorithm.\n")
+Enter 1 to use the random greedy algorithm.\n")
 
     # Prompt for the algorithm specification
     while True:
